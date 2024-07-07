@@ -368,10 +368,9 @@ void MapScene::Save(bool properties_changed)
 	treeMap.active_node = n_mapInfo.ID;
 	// FIXME: ProjectData.Project is Const
 	core().project()->saveTreeMap();
-	QString file = QString("Map%1.emu")
-			.arg(QString::number(n_mapInfo.ID), 4, QLatin1Char('0'));
-	lcf::LMU_Reader::PrepareSave(*m_map);
-	// FIXME: ProjectData.Project is Const
+    QString file = QString("Map%1.emu").arg(QString::number(n_mapInfo.ID), 4, u'0');
+    lcf::LMU_Reader::PrepareSave(*m_map);
+    // FIXME: ProjectData.Project is Const
 	core().project()->saveMap(*m_map, n_mapInfo.ID);
 	m_undoStack->clear();
 	emit mapSaved();
@@ -420,9 +419,9 @@ void MapScene::on_actionNewEvent()
 
 	lcf::rpg::Event event;
 	event.ID = id;
-	event.name = ToDBString(QString("EV%1").arg(QString::number(id), 4, QLatin1Char('0')));
-	event.x = cur_x;
-	event.y = cur_y;
+    event.name = ToDBString(QString("EV%1").arg(QString::number(id), 4, u'0'));
+    event.x = cur_x;
+    event.y = cur_y;
 	event.pages.push_back(lcf::rpg::EventPage());
 
 	int result = EventDialog::edit(m_view, event, m_project);
@@ -467,9 +466,9 @@ void MapScene::on_actionPasteEvent() {
 
 	lcf::rpg::Event event = event_clipboard;
 	event.ID = id;
-	event.name = ToDBString(QString("EV%1").arg(QString::number(id), 4, QLatin1Char('0')));
-	event.x = cur_x;
-	event.y = cur_y;
+    event.name = ToDBString(QString("EV%1").arg(QString::number(id), 4, u'0'));
+    event.x = cur_x;
+    event.y = cur_y;
 
 	m_map->events.push_back(event);
 	m_undoStack->push(new UndoEvent(event, this));

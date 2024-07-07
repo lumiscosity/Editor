@@ -86,13 +86,12 @@ void ImportProjectDialog::on_toolSourcePath_clicked()
 													 m_defDir);
 	if (path.isEmpty())
 		return;
-	if (!QFileInfo(path+"/RPG_RT.ldb").exists())
-	{
-		QMessageBox::critical(this,
+    if (!QFileInfo::exists(path + "/RPG_RT.ldb")) {
+        QMessageBox::critical(this,
 							  tr("Error"),
 							  tr("This folder does not contain a valid RPG Maker project"));
 		return;
-	}
-	ui->lineSourcePath->setText(path+"/");
+    }
+    ui->lineSourcePath->setText(path+"/");
 	ui->lineGameFolder->setText(QDir(path).dirName());
 }

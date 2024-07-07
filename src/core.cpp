@@ -717,10 +717,10 @@ void Core::renderEvent(const lcf::rpg::Event& event, const QRect &dest_rect)
 		QString check = ToQString(event.pages[0].character_name);
 		int offset = (event.pages[0].character_index * 32 + event.pages[0].character_direction * 4 + event.pages[0].character_pattern);
 		QString offset_string = QString::number(offset);
-		offset_string = offset_string.leftJustified(3, QLatin1Char('0'));
-		check.append(offset_string);
+        offset_string = offset_string.leftJustified(3, u'0');
+        check.append(offset_string);
 
-		if (!m_eventCache.contains(check))
+        if (!m_eventCache.contains(check))
 			cacheEvent(&event, check);
 		m_painter.drawPixmap(final_rect, m_eventCache.value(check), QRect(0,6,24,24));
 	}

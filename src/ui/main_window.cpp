@@ -59,11 +59,10 @@ static void recurseAddDir(QDir d, QStringList & list) {
 	QStringList qsl = d.entryList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files);
 
 	foreach (QString file, qsl) {
+        QFileInfo finfo(QString("%1/%2").arg(d.path(), file));
 
-		QFileInfo finfo(QString("%1/%2").arg(d.path()).arg(file));
-
-		if (finfo.isSymLink())
-			return;
+        if (finfo.isSymLink())
+            return;
 
 		if (finfo.isDir()) {
 
@@ -334,11 +333,12 @@ void MainWindow::ImportProject(const QDir& src_dir, QDir& target_dir, bool conve
 		{
 			QMessageBox box(this);
 			QString name = tr("Error");
-			QString text = tr("Could not copy file %1 to \n"
-							  "%2").arg(entries[i]).arg(dest_file);
+            QString text = tr("Could not copy file %1 to \n"
+                              "%2")
+                               .arg(entries[i], dest_file);
 
-			box.setModal(true);
-			box.setWindowTitle(name);
+            box.setModal(true);
+            box.setWindowTitle(name);
 			box.setText(QString::fromLatin1("%1").arg(text));
 			box.setIcon(QMessageBox::Critical);
 			box.setStandardButtons(QMessageBox::Ok);
@@ -662,10 +662,10 @@ bool MainWindow::removeDir(const QString & dirName, const QString &root)
 
 			if (!result)
 			{
-				QMessageBox::warning(this,
+                QMessageBox::warning(this,
 									 tr("An error ocurred"),
 									 QString(tr("Could't delete %1")).arg(info.absoluteFilePath()),
-									 QMessageBox::Ok, 0);
+                                     QMessageBox::Ok);
 				return false;
 			}
 		}
@@ -1063,9 +1063,8 @@ void MainWindow::on_actionMapCopy_triggered()
 {
 	copiedMapId = ui->treeMap->currentItem()->data(1, Qt::DisplayRole).toInt();
 	m_copiedMap = core().project()->projectDir().path() + (core().project()->projectType() == FileFinder::ProjectType::EasyRpg ? "/Map%1.emu" : "/Map%1.lmu");
-	m_copiedMap = m_copiedMap.arg(QString::number(copiedMapId),
-								  4, QLatin1Char('0'));
-	ui->actionMapPaste->setEnabled(true);
+    m_copiedMap = m_copiedMap.arg(QString::number(copiedMapId), 4, u'0');
+    ui->actionMapPaste->setEnabled(true);
 }
 
 
@@ -1091,9 +1090,9 @@ void MainWindow::on_actionMapNew_triggered()
 		if (!m_treeItems.contains(i))
 		{
 			info.ID = i;
-			info.name = ToDBString(tr("MAP%1").arg(QString::number(i),4, QLatin1Char('0')));
-			break;
-		}
+            info.name = ToDBString(tr("MAP%1").arg(QString::number(i), 4, u'0'));
+            break;
+        }
 	}
 
 	info.type = lcf::rpg::TreeMap::MapType_map;
@@ -1136,9 +1135,9 @@ void MainWindow::on_actionMapNew_triggered()
 	item->setSelected(true);
 	core().project()->saveTreeMap();
 	QString path = core().project()->projectDir().path() + (core().project()->projectType() == FileFinder::ProjectType::EasyRpg ? "/Map%1.emu" : "/Map%1.lmu");
-	path = path.arg(QString::number(info.ID), 4, QLatin1Char('0'));
-	auto lcf_engine = lcf::GetEngineVersion(core().project()->database());
-	if (core().project()->projectType() == FileFinder::ProjectType::EasyRpg) {
+    path = path.arg(QString::number(info.ID), 4, u'0');
+    auto lcf_engine = lcf::GetEngineVersion(core().project()->database());
+    if (core().project()->projectType() == FileFinder::ProjectType::EasyRpg) {
 		lcf::LMU_Reader::SaveXml(path.toStdString(), *map, lcf_engine);
 	} else {
 		lcf::LMU_Reader::Save(path.toStdString(), *map, lcf_engine, core().project()->encoding().toStdString());
@@ -1180,9 +1179,9 @@ void MainWindow::on_actionMapPaste_triggered()
 		if (!m_treeItems.contains(i))
 		{
 			info.ID = i;
-			info.name = ToDBString(tr("MAP%1").arg(QString::number(i),4, QLatin1Char('0')));
-			break;
-		}
+            info.name = ToDBString(tr("MAP%1").arg(QString::number(i), 4, u'0'));
+            break;
+        }
 	}
 
 	info.type = lcf::rpg::TreeMap::MapType_map;
@@ -1230,9 +1229,9 @@ void MainWindow::on_actionMapPaste_triggered()
 	item->setSelected(true);
 	core().project()->saveTreeMap();
 	QString path = core().project()->projectDir().path() + (core().project()->projectType() == FileFinder::ProjectType::EasyRpg ? "/Map%1.emu" : "/Map%1.lmu");
-	path = path.arg(QString::number(info.ID), 4, QLatin1Char('0'));
-	auto lcf_engine = lcf::GetEngineVersion(core().project()->database());
-	if (core().project()->projectType() == FileFinder::ProjectType::EasyRpg) {
+    path = path.arg(QString::number(info.ID), 4, u'0');
+    auto lcf_engine = lcf::GetEngineVersion(core().project()->database());
+    if (core().project()->projectType() == FileFinder::ProjectType::EasyRpg) {
 		lcf::LMU_Reader::SaveXml(path.toStdString(), *map, lcf_engine);
 	} else {
 		lcf::LMU_Reader::Save(path.toStdString(), *map, lcf_engine, core().project()->encoding().toStdString());
@@ -1262,10 +1261,10 @@ void MainWindow::removeMap(const int id)
 
 	QString mapPath = core().project()->projectDir().path() + (core().project()->projectType() == FileFinder::ProjectType::EasyRpg ? "/Map%1.emu" : "/Map%1.lmu");
 
-	mapPath = mapPath.arg(QString::number(id), 4, QLatin1Char('0'));
+    mapPath = mapPath.arg(QString::number(id), 4, u'0');
 
-	if (QFileInfo(mapPath).exists())
-		QFile::remove(mapPath);
+    if (QFileInfo::exists(mapPath))
+        QFile::remove(mapPath);
 	else
 		qWarning() << QString(tr("file not found: %1")).arg(mapPath);
 
@@ -1309,6 +1308,11 @@ void MainWindow::on_actionMapProperties_triggered()
 void MainWindow::on_actionSearch_triggered()
 {
 	searchdialog->setVisible(true);
+}
+
+void MainWindow::on_actionAboutQt_triggered()
+{
+    QMessageBox::aboutQt(this);
 }
 
 void MainWindow::updateSearchUI()
@@ -1392,5 +1396,5 @@ void MainWindow::refreshIcons() {
 	set(ui->actionTitleBackgroundToggle, "show-title");
 
 	// Help
-	set(ui->actionContents, "help-about");
+    set(ui->actionContents, "help-about");
 }

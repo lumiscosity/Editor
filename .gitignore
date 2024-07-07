@@ -39,6 +39,7 @@ lib/liblcf
 /bin/EasyRPG_Editor
 *.a
 CMakeCache.txt
+CMakeCache.txt.prev
 CMakeFiles/
 cmake_install.cmake
 *automoc.cpp
@@ -54,6 +55,13 @@ cmake-build-*/
 
 # Visual Studio Code
 .vscode/
+
+# QT Creator
+.qt/
+.qtc/
+qtcsettings.cmake
+Testing/
+.qtc_clangd/
 
 # Mac
 .DS_Store
