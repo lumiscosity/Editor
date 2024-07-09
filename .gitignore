@@ -28,6 +28,7 @@ Makefile*
 /bin/platforms
 *.cbp
 translations/
+/src/binding/generated/
 
 # flatpak
 /.flatpak-builder
