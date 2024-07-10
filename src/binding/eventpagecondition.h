@@ -17,31 +17,21 @@
 
 #pragma once
 
-#include <lcf/dbstring.h>
-#include <QString>
-#include <QStringView>
-#include <QList>
+#include "generated/eventpagecondition.h"
 
-inline QString ToQString(const std::string& s) {
-	return QString::fromStdString(s);
-}
+/**
+ * Binding::EventPageCondition class.
+ * This is the extension point for the generated API.
+ */
+namespace Binding {
+class EventPageCondition : public Generated::EventPageCondition {
+	Q_OBJECT
 
-inline QString ToQString(lcf::StringView s) {
-	return QString::fromUtf8(s.data(), s.size());
-}
+public:
+	EventPageCondition(ProjectData& project, lcf::rpg::EventPageCondition& data, QObject* parent = nullptr);
 
-inline QString ToQString(const lcf::DBString& s) {
-	return QString::fromUtf8(s.c_str(), s.size());
-}
+signals:
 
-inline lcf::DBString ToDBString(const QString& s) {
-	return lcf::DBString(s.toStdString());
-}
-
-inline QList<QString> ToQStringgQList(std::vector<lcf::DBString> vector) {
-    QList<QString> out = QList<QString>();
-    for (auto i = vector.begin(); i != vector.end(); ++i) {
-        out.append(ToQString(*i));
-    }
-    return out;
-}
+private:
+};
+} // namespace Binding

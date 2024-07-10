@@ -17,31 +17,28 @@
 
 #pragma once
 
-#include <lcf/dbstring.h>
-#include <QString>
-#include <QStringView>
-#include <QList>
+#include <QObject>
+#include "binding_base.h"
 
-inline QString ToQString(const std::string& s) {
-	return QString::fromStdString(s);
-}
+/**
+ * Wrapper for arrays containing lcf-data where 1-indexing is useful.
+ */
+namespace Binding {
+class ArrayAdapter : public QObject {
+	Q_OBJECT
+	Q_PROPERTY(QVector<Binding::BindingBase*> data READ data CONSTANT)
 
-inline QString ToQString(lcf::StringView s) {
-	return QString::fromUtf8(s.data(), s.size());
-}
+public:
+	ArrayAdapter(QObject* parent = nullptr);
 
-inline QString ToQString(const lcf::DBString& s) {
-	return QString::fromUtf8(s.c_str(), s.size());
-}
+	Q_INVOKABLE Binding::BindingBase* get(int index);
+	Q_INVOKABLE Binding::BindingBase* get0(int index);
 
-inline lcf::DBString ToDBString(const QString& s) {
-	return lcf::DBString(s.toStdString());
-}
+	QVector<BindingBase*>& data();
 
-inline QList<QString> ToQStringgQList(std::vector<lcf::DBString> vector) {
-    QList<QString> out = QList<QString>();
-    for (auto i = vector.begin(); i != vector.end(); ++i) {
-        out.append(ToQString(*i));
-    }
-    return out;
-}
+signals:
+
+protected:
+	QVector<BindingBase*> m_data;
+};
+} // namespace Binding

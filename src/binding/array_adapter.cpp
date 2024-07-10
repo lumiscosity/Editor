@@ -15,33 +15,26 @@
  * along with EasyRPG Editor. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#include "array_adapter.h"
 
-#include <lcf/dbstring.h>
-#include <QString>
-#include <QStringView>
-#include <QList>
+using namespace Binding;
 
-inline QString ToQString(const std::string& s) {
-	return QString::fromStdString(s);
+ArrayAdapter::ArrayAdapter(QObject* parent) : QObject(parent) {
+
 }
 
-inline QString ToQString(lcf::StringView s) {
-	return QString::fromUtf8(s.data(), s.size());
+BindingBase* ArrayAdapter::get(int index) {
+	return get0(index - 1);
 }
 
-inline QString ToQString(const lcf::DBString& s) {
-	return QString::fromUtf8(s.c_str(), s.size());
+BindingBase* ArrayAdapter::get0(int index) {
+	if (index < 0 || index >= m_data.size()) {
+		return nullptr;
+	}
+
+	return m_data[index];
 }
 
-inline lcf::DBString ToDBString(const QString& s) {
-	return lcf::DBString(s.toStdString());
-}
-
-inline QList<QString> ToQStringgQList(std::vector<lcf::DBString> vector) {
-    QList<QString> out = QList<QString>();
-    for (auto i = vector.begin(); i != vector.end(); ++i) {
-        out.append(ToQString(*i));
-    }
-    return out;
+QVector<BindingBase*>& ArrayAdapter::data() {
+	return m_data;
 }

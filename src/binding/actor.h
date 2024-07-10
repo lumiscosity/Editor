@@ -17,31 +17,26 @@
 
 #pragma once
 
-#include <lcf/dbstring.h>
-#include <QString>
-#include <QStringView>
-#include <QList>
+#include "generated/actor.h"
+#include <iostream>
 
-inline QString ToQString(const std::string& s) {
-	return QString::fromStdString(s);
-}
+/**
+ * Binding::Actor class.
+ * This is the extension point for the generated API.
+ */
+namespace Binding {
+class Actor : public Generated::Actor {
+	Q_OBJECT
 
-inline QString ToQString(lcf::StringView s) {
-	return QString::fromUtf8(s.data(), s.size());
-}
+public:
+	Actor(ProjectData& project, lcf::rpg::Actor& data, QObject* parent = nullptr);
 
-inline QString ToQString(const lcf::DBString& s) {
-	return QString::fromUtf8(s.c_str(), s.size());
-}
+	Q_INVOKABLE void sayHello() {
+		std::cout << "Hello from " << m_data.name.c_str() << "\n";
+	}
 
-inline lcf::DBString ToDBString(const QString& s) {
-	return lcf::DBString(s.toStdString());
-}
+signals:
 
-inline QList<QString> ToQStringgQList(std::vector<lcf::DBString> vector) {
-    QList<QString> out = QList<QString>();
-    for (auto i = vector.begin(); i != vector.end(); ++i) {
-        out.append(ToQString(*i));
-    }
-    return out;
-}
+private:
+};
+} // namespace Binding

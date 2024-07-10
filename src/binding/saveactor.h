@@ -17,31 +17,21 @@
 
 #pragma once
 
-#include <lcf/dbstring.h>
-#include <QString>
-#include <QStringView>
-#include <QList>
+#include "generated/saveactor.h"
 
-inline QString ToQString(const std::string& s) {
-	return QString::fromStdString(s);
-}
+/**
+ * Binding::SaveActor class.
+ * This is the extension point for the generated API.
+ */
+namespace Binding {
+class SaveActor : public Generated::SaveActor {
+	Q_OBJECT
 
-inline QString ToQString(lcf::StringView s) {
-	return QString::fromUtf8(s.data(), s.size());
-}
+public:
+	SaveActor(ProjectData& project, lcf::rpg::SaveActor& data, QObject* parent = nullptr);
 
-inline QString ToQString(const lcf::DBString& s) {
-	return QString::fromUtf8(s.c_str(), s.size());
-}
+signals:
 
-inline lcf::DBString ToDBString(const QString& s) {
-	return lcf::DBString(s.toStdString());
-}
-
-inline QList<QString> ToQStringgQList(std::vector<lcf::DBString> vector) {
-    QList<QString> out = QList<QString>();
-    for (auto i = vector.begin(); i != vector.end(); ++i) {
-        out.append(ToQString(*i));
-    }
-    return out;
-}
+private:
+};
+} // namespace Binding
