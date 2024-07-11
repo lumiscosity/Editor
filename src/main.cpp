@@ -15,64 +15,21 @@
  * along with EasyRPG Editor. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/main_window.h"
-#include "ui/event/event_page_widget.h"
-#include <QApplication>
-#include <QSplashScreen>
-#include <QTranslator>
-#include <QTimer>
-#include <QDebug>
+#include <QGuiApplication>
+#include <QQmlApplicationEngine>
 
 int main(int argc, char *argv[])
 {
-	QApplication a(argc, argv);
+    QGuiApplication app(argc, argv);
 
-	// show splash
-	QPixmap logo(":/app/splash.png");
-	QSplashScreen s(logo, Qt::WindowStaysOnTopHint);
-	s.showMessage("EasyRPG Editor");
-	s.show();
-#ifdef NDEBUG
-	// close splash after 3 seconds for release
-	QTimer::singleShot(3000, &s, &QWidget::close);
-#endif
+    QQmlApplicationEngine engine;
+    QObject::connect(
+        &engine,
+        &QQmlApplicationEngine::objectCreationFailed,
+        &app,
+        []() { QCoreApplication::exit(-1); },
+        Qt::QueuedConnection);
+    engine.load(QString("src/qml/main.qml"));
 
-	a.setApplicationName("EasyRPG Editor");
-	a.setOrganizationName("EasyRPG");
-	a.setOrganizationDomain("easyrpg.org");
-
-	// load translations
-	s.showMessage("Loading translations...");
-	a.processEvents();
-	QTranslator t;
-	bool found = false;
-#ifndef NDEBUG
-	// allow overwriting in debug builds
-	QString e = getenv("EASYRPG_EDITOR_LANG_FILE");
-	if (!e.isEmpty())
-		found = t.load(e);
-#endif
-	if (!found)
-        found = t.load(QLocale(), u"easyrpg-editor"_qs, u"_"_qs, u":/i18n"_qs);
-    if (found)
-        a.installTranslator(&t);
-	else
-		qDebug() << "No translation(s) available.";
-
-	// main window and project
-	s.showMessage("Loading main window...");
-	a.processEvents();
-	MainWindow w;
-	s.showMessage("Loading last project...");
-	a.processEvents();
-	w.LoadLastProject();
-	s.clearMessage();
-	w.show();
-#ifndef NDEBUG
-	// close splash immediately in debug
-	s.finish(&w);
-#endif
-
-	// into event loop
-	return a.exec();
+    return app.exec();
 }

@@ -27,8 +27,18 @@ Makefile*
 /bin/*.res
 /bin/platforms
 *.cbp
+
+# Generated at runtime
 translations/
+
+# Generated externally
 /src/binding/generated/
+
+# qml garbage
+.rcc/
+meta_types/
+qmltypes/
+easyrpg-editor_qmltyperegistrations.cpp
 
 # flatpak
 /.flatpak-builder
@@ -66,3 +76,4 @@ Testing/
 
 # Mac
 .DS_Store
+
