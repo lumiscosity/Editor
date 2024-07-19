@@ -165,6 +165,8 @@ void MapScene::Init()
 	m_view->verticalScrollBar()->setValue(n_mapInfo.scrollbar_y *static_cast<int>(m_scale));
 	m_view->horizontalScrollBar()->setValue(n_mapInfo.scrollbar_x * static_cast<int>(m_scale));
 	m_init = true;
+	core().setCurrentMapEvents(mapEvents());
+	redrawPanorama();
 	redrawMap();
 }
 
@@ -214,7 +216,6 @@ void MapScene::setEventData(int id, const lcf::rpg::Event &data)
 		if (m_map->events[i].ID == id) {
 			if (m_map->events[i] == data) {
 				m_map->events.erase(m_map->events.begin() + i);
-				redrawMap();
 				return;
 			} else {
 				m_map->events[i] = data;
@@ -265,7 +266,6 @@ void MapScene::redrawMap()
 	if (!m_init)
 		return;
 	core().LoadChipset(m_map->chipset_id);
-	core().setCurrentMapEvents(mapEvents());
 	s_tileSize = core().tileSize() * static_cast<double>(m_scale);
 	redrawLayer(Core::LOWER);
 	redrawLayer(Core::UPPER);
@@ -368,10 +368,9 @@ void MapScene::Save(bool properties_changed)
 	treeMap.active_node = n_mapInfo.ID;
 	// FIXME: ProjectData.Project is Const
 	core().project()->saveTreeMap();
-	QString file = QString("Map%1.emu")
-			.arg(QString::number(n_mapInfo.ID), 4, QLatin1Char('0'));
-	lcf::LMU_Reader::PrepareSave(*m_map);
-	// FIXME: ProjectData.Project is Const
+    QString file = QString("Map%1.emu").arg(QString::number(n_mapInfo.ID), 4, u'0');
+    lcf::LMU_Reader::PrepareSave(*m_map);
+    // FIXME: ProjectData.Project is Const
 	core().project()->saveMap(*m_map, n_mapInfo.ID);
 	m_undoStack->clear();
 	emit mapSaved();
@@ -420,9 +419,9 @@ void MapScene::on_actionNewEvent()
 
 	lcf::rpg::Event event;
 	event.ID = id;
-	event.name = ToDBString(QString("EV%1").arg(QString::number(id), 4, QLatin1Char('0')));
-	event.x = cur_x;
-	event.y = cur_y;
+    event.name = ToDBString(QString("EV%1").arg(QString::number(id), 4, u'0'));
+    event.x = cur_x;
+    event.y = cur_y;
 	event.pages.push_back(lcf::rpg::EventPage());
 
 	int result = EventDialog::edit(m_view, event, m_project);
@@ -467,9 +466,9 @@ void MapScene::on_actionPasteEvent() {
 
 	lcf::rpg::Event event = event_clipboard;
 	event.ID = id;
-	event.name = ToDBString(QString("EV%1").arg(QString::number(id), 4, QLatin1Char('0')));
-	event.x = cur_x;
-	event.y = cur_y;
+    event.name = ToDBString(QString("EV%1").arg(QString::number(id), 4, u'0'));
+    event.x = cur_x;
+    event.y = cur_y;
 
 	m_map->events.push_back(event);
 	m_undoStack->push(new UndoEvent(event, this));

@@ -53,9 +53,9 @@ int main(int argc, char *argv[])
 		found = t.load(e);
 #endif
 	if (!found)
-		found = t.load(QLocale(), QLatin1String("easyrpg-editor"), QLatin1String("_"), QLatin1String(":/i18n"));
-	if (found)
-		a.installTranslator(&t);
+        found = t.load(QLocale(), u"easyrpg-editor"_qs, u"_"_qs, u":/i18n"_qs);
+    if (found)
+        a.installTranslator(&t);
 	else
 		qDebug() << "No translation(s) available.";
 

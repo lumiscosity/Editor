@@ -64,7 +64,7 @@ public:
 	void setEncoding(const QString& encoding);
 
 	QDir projectDir() const;
-	void setProjectDir(const QDir& projectDir);
+    void setProjectDir(const QString& projectDir);
 
 	QString gameTitle() const;
 	void setGameTitle(const QString& gameTitle);

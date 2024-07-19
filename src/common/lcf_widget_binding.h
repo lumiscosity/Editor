@@ -22,6 +22,7 @@ class QLineEdit;
 class QCheckBox;
 class QGroupBox;
 
+#include <QMetaObject>
 #include <QObject>
 #include <QCheckBox>
 #include <QSpinBox>
@@ -35,15 +36,13 @@ class QGroupBox;
 #include "signal_blocker.h"
 
 template<class T>
-class LcfObjectHolder : QObject {
+class LcfObjectHolder {
 public:
 	LcfObjectHolder() = default;
+    ~LcfObjectHolder() = default;
 
+    LcfObjectHolder(const LcfObjectHolder &) = default;
 	LcfObjectHolder(T& obj) : m_obj(&obj) {}
-
-	LcfObjectHolder(const LcfObjectHolder<T>& other) : QObject(nullptr) {
-		m_obj = other.m_obj;
-	}
 
 	T& obj() {
 		return *m_obj;

@@ -43,11 +43,7 @@ Project::ProjectList Project::enumerate(const QDir& path) {
 	return prj_list;
 }
 
-std::shared_ptr<Project> Project::load(const QString& path) {
-	return load(QDir(path));
-}
-
-std::shared_ptr<Project> Project::load(const QDir& dir) {
+std::shared_ptr<Project> Project::load(const QString& dir) {
 	FileFinder::ProjectType project_type = FileFinder::GetProjectType(dir);
 
 	if (project_type == FileFinder::ProjectType::None) {
@@ -91,6 +87,10 @@ std::shared_ptr<Project> Project::load(const QDir& dir) {
 	return p;
 }
 
+std::shared_ptr<Project> Project::load(const QDir& path) {
+    return load(path.path());
+}
+
 bool Project::loadDatabaseAndMapTree() {
 	if (projectType() == FileFinder::ProjectType::Legacy) {
 		detectEncoding();
@@ -121,11 +121,10 @@ bool Project::loadDatabaseAndMapTree() {
 std::unique_ptr<lcf::rpg::Map> Project::loadMap(int index) const {
 	QString ext = projectType() == FileFinder::ProjectType::EasyRpg ? "emu" : "lmu";
 
-	QString file = QString("Map%1.%2")
-			.arg(QString::number(index), 4, QLatin1Char('0')).arg(ext);
-	QString mapFile = findFile(file);
+    QString file = QString("Map%1.%2").arg(QString::number(index), 4, u'0').arg(ext);
+    QString mapFile = findFile(file);
 
-	if (mapFile.isNull()) {
+    if (mapFile.isNull()) {
 		return nullptr;
 	}
 
@@ -140,11 +139,10 @@ bool Project::saveMap(lcf::rpg::Map& map, int index, bool incSavecount) {
 	auto lcf_engine = lcf::GetEngineVersion(m_data.database());
 	QString ext = projectType() == FileFinder::ProjectType::EasyRpg ? "emu" : "lmu";
 
-	QString file = QString("Map%1.%2")
-			.arg(QString::number(index), 4, QLatin1Char('0')).arg(ext);
-	QString mapFile = findFileOrDefault(file);
+    QString file = QString("Map%1.%2").arg(QString::number(index), 4, u'0').arg(ext);
+    QString mapFile = findFileOrDefault(file);
 
-	if (incSavecount) {
+    if (incSavecount) {
 		lcf::LMU_Reader::PrepareSave(map);
 	}
 
@@ -156,7 +154,7 @@ bool Project::saveMap(lcf::rpg::Map& map, int index, bool incSavecount) {
 }
 
 void Project::relocate(const QDir& newDir, FileFinder::ProjectType newProjectType) {
-	setProjectDir(newDir);
+    setProjectDir(newDir.path());
 	setProjectType(newProjectType);
 }
 
@@ -228,8 +226,8 @@ QDir Project::projectDir() const {
 	return m_projectDir;
 }
 
-void Project::setProjectDir(const QDir& projectDir) {
-	m_projectDir = projectDir;
+void Project::setProjectDir(const QString& projectDir) {
+    m_projectDir.setPath(projectDir);
 }
 
 QString Project::gameTitle() const {
