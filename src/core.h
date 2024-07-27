@@ -60,7 +60,7 @@ public:
 	static Core* getCore();
 
 	void LoadChipset(int n_chipsetid);
-	void LoadBackground(QString name);
+    QSize LoadBackground(QString name);
 
 	int tileSize();
 	void setTileSize(int tileSize);
@@ -77,6 +77,7 @@ public:
 	void setGameTitle(const QString &gameTitle);
 
 	void beginPainting(QPixmap &dest);
+    void renderBackground(const QRect &dest_rect);
 	void renderTile(const short &tile_id, const QRect &dest_rect);
 	void renderEvent(const lcf::rpg::Event& event, const QRect &dest_rect);
 	void endPainting();
@@ -117,7 +118,6 @@ public:
 
 	std::shared_ptr<Project>& project();
 	const std::shared_ptr<Project>& project() const;
-
 signals:
 	void toolChanged();
 

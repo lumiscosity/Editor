@@ -89,8 +89,10 @@ MapScene::MapScene(ProjectData& project, int id, QGraphicsView *view, QObject *p
 	connect(actions[7],SIGNAL(triggered()),this,SLOT(on_actionDeleteEvent()));
 
 	m_eventMenu->addActions(actions);
+    m_background = new QGraphicsPixmapItem();
 	m_lowerpix = new QGraphicsPixmapItem();
 	m_upperpix = new QGraphicsPixmapItem();
+    addItem(m_background);
 	addItem(m_lowerpix);
 	addItem(m_upperpix);
 	Load();
@@ -166,7 +168,6 @@ void MapScene::Init()
 	m_view->horizontalScrollBar()->setValue(n_mapInfo.scrollbar_x * static_cast<int>(m_scale));
 	m_init = true;
 	core().setCurrentMapEvents(mapEvents());
-	redrawPanorama();
 	redrawMap();
 }
 
@@ -251,7 +252,6 @@ void MapScene::editMapProperties(QTreeWidgetItem *item)
 		}
 
 		Save(true);
-		redrawPanorama();
 		redrawMap();
 		setScale(m_scale);
 
@@ -267,6 +267,7 @@ void MapScene::redrawMap()
 		return;
 	core().LoadChipset(m_map->chipset_id);
 	s_tileSize = core().tileSize() * static_cast<double>(m_scale);
+    redrawPanorama();
 	redrawLayer(Core::LOWER);
 	redrawLayer(Core::UPPER);
 }
@@ -390,8 +391,6 @@ void MapScene::Load(bool revert)
 	m_map = m_project.project().loadMap(n_mapInfo.ID);
 	m_lower =  m_map->lower_layer;
 	m_upper =  m_map->upper_layer;
-
-	redrawPanorama();
 
 	if (!revert) {
 		redrawGrid();
@@ -782,20 +781,12 @@ void MapScene::updateArea(int x1, int y1, int x2, int y2)
 
 void MapScene::redrawLayer(Core::Layer layer)
 {
-	QSize size = m_view->size();
-	if (size.width() > m_map->width*s_tileSize)
-		size.setWidth(m_map->width*s_tileSize);
-	else
-		size.setWidth(size.width()+s_tileSize);
-	if (size.height() > m_map->height*s_tileSize)
-		size.setHeight(m_map->height*s_tileSize);
-	else
-		size.setHeight(size.height()+s_tileSize);
-	int start_x = m_view->horizontalScrollBar()->value()/s_tileSize;
-	int start_y = m_view->verticalScrollBar()->value()/s_tileSize;
-	int end_x = start_x+(size.width()-1)/s_tileSize;
-	int end_y = start_y+(size.height()-1)/s_tileSize;
+    QSize size = getViewportContentSize();
 	QPixmap pix(size);
+    int start_x = m_view->horizontalScrollBar()->value()/s_tileSize;
+    int start_y = m_view->verticalScrollBar()->value()/s_tileSize;
+    int end_x = start_x+(size.width()-1)/s_tileSize;
+    int end_y = start_y+(size.height()-1)/s_tileSize;
 	pix.fill(QColor(0,0,0,0));
 	core().beginPainting(pix);
 	for (int x = start_x; x <= end_x; x++)
@@ -1047,11 +1038,36 @@ int MapScene::getFirstFreeId() {
 }
 
 void MapScene::redrawPanorama() {
+    QSize panorama_size;
 	if (m_map->parallax_flag) {
-		core().LoadBackground(m_map->parallax_name.c_str());
+        panorama_size = core().LoadBackground(m_map->parallax_name.c_str());
 	} else {
-		core().LoadBackground(QString());
+        panorama_size = core().LoadBackground(QString());
 	}
+    QSize size = getViewportContentSize();
+    int panorama_width = (int)(((float)s_tileSize / 16) * panorama_size.width());
+    int panorama_height = (int)(((float)s_tileSize / 16) * panorama_size.height());
+    int start_x = m_view->horizontalScrollBar()->value()/panorama_width;
+    int start_y = m_view->verticalScrollBar()->value()/panorama_height;
+    int end_x = (start_x+(size.width()-1)/panorama_width)+1;
+    int end_y = (start_y+(size.height()-1)/panorama_height)+1;
+    int w_offset = m_view->horizontalScrollBar()->value()%panorama_width;
+    int h_offset = m_view->verticalScrollBar()->value()%panorama_height;
+    QPixmap pix(size);
+    pix.fill(QColor(0,0,0,255));
+    core().beginPainting(pix);
+    for (int x = start_x; x <= end_x; x++)
+        for (int y = start_y; y <= end_y; y++)
+        {
+            QRect dest_rect(((x-start_x) * panorama_width) - w_offset,
+                            ((y-start_y)* panorama_height) - h_offset,
+                            panorama_width,
+                            panorama_height);
+            core().renderBackground(dest_rect);
+        }
+    core().endPainting();
+    m_background->setPixmap(pix);
+    m_background->setPos(m_view->horizontalScrollBar()->value(), m_view->verticalScrollBar()->value());
 }
 
 void MapScene::redrawGrid() {
@@ -1080,4 +1096,17 @@ void MapScene::redrawGrid() {
 	m_lines = createItemGroup(grid_lines);
 
 	m_lines->setVisible(core().layer() == Core::EVENT);
+}
+
+QSize MapScene::getViewportContentSize() {
+    QSize size = m_view->size();
+    if (size.width() > m_map->width*s_tileSize)
+        size.setWidth(m_map->width*s_tileSize);
+    else
+        size.setWidth(size.width()+s_tileSize);
+    if (size.height() > m_map->height*s_tileSize)
+        size.setHeight(m_map->height*s_tileSize);
+    else
+        size.setHeight(size.height()+s_tileSize);
+    return size;
 }

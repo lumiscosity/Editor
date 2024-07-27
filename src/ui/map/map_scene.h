@@ -124,9 +124,11 @@ private:
 	int getFirstFreeId();
 	void redrawPanorama();
 	void redrawGrid();
+    QSize getViewportContentSize();
 
 
 	QMenu *m_eventMenu;
+    QGraphicsPixmapItem *m_background;
 	QGraphicsPixmapItem *m_lowerpix;
 	QGraphicsPixmapItem *m_upperpix;
 	QGraphicsItemGroup* m_lines;

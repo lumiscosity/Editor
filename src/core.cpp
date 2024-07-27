@@ -22,7 +22,6 @@
 #include <QGraphicsView>
 #include <QPainter>
 #include <QDebug>
-#include "ui/map/map_scene.h"
 #include "common/dbstring.h"
 #include "common/image_loader.h"
 
@@ -568,13 +567,14 @@ void Core::LoadChipset(int n_chipsetid)
 	emit chipsetChanged();
 }
 
-void Core::LoadBackground(QString name)
+QSize Core::LoadBackground(QString name)
 {
 	if (name.isEmpty()) {
-		m_background = QPixmap(640,480);
+        m_background = QPixmap(640,480);
 		m_background.fill(Qt::black);
 	} else
 		m_background = ImageLoader::Load(project()->findFile(PANORAMA, name, FileFinder::FileType::Image));
+    return m_background.size();
 }
 
 int Core::tileSize()
@@ -695,10 +695,13 @@ void Core::beginPainting(QPixmap &dest)
 	m_painter.setPen(Qt::yellow);
 }
 
+void Core::renderBackground(const QRect &dest_rect)
+{
+    m_painter.drawPixmap(dest_rect, m_background);
+}
+
 void Core::renderTile(const short &tile_id, const QRect &dest_rect)
 {
-	if (tile_id < 10000)
-		m_painter.fillRect(dest_rect, QBrush(m_background));
 	m_painter.drawPixmap(dest_rect, m_tileCache[tile_id]);
 }
 
