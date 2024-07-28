@@ -104,9 +104,9 @@ MapScene::MapScene(ProjectData& project, int id, QGraphicsView *view, QObject *p
 	m_drawing = false;
 	m_cancelled = false;
 	m_selecting = false;
-	QGraphicsBlurEffect * effect = new QGraphicsBlurEffect(this);
-	effect->setBlurRadius(2.0);
-	effect->setBlurHints(QGraphicsBlurEffect::PerformanceHint);
+    QGraphicsOpacityEffect * effect = new QGraphicsOpacityEffect(this);
+    effect->setOpacity(0.7);
+    m_background->setGraphicsEffect(effect);
 	m_lowerpix->setGraphicsEffect(effect);
 	m_upperpix->setGraphicsEffect(new QGraphicsOpacityEffect(this));
 	onLayerChanged();
@@ -226,7 +226,7 @@ void MapScene::setEventData(int id, const lcf::rpg::Event &data)
 	}
 
 	m_map->events.push_back(data);
-	redrawMap();
+    redrawLayer(Core::UPPER);
 }
 
 QMap<int, lcf::rpg::Event*> *MapScene::mapEvents()
@@ -542,7 +542,9 @@ void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 			stopDrawing();
 			return;
 		}
-		if (sceneRect().contains(event->scenePos()) && core().layer() == Core::EVENT)
+        if (core().tool() == Core::ZOOM && static_cast<double>(m_scale) > 0.125)
+            setScale(m_scale/2);
+        else if (sceneRect().contains(event->scenePos()) && core().layer() == Core::EVENT)
 		{
 			m_eventMenu->actions()[2]->setEnabled(!getEventAt(cur_x, cur_y));
 			m_eventMenu->actions()[3]->setEnabled(getEventAt(cur_x, cur_y));
@@ -555,8 +557,7 @@ void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 			lst_y = cur_y;
 			m_eventMenu->popup(event->screenPos());
 		}
-		if (core().tool() == Core::ZOOM && static_cast<double>(m_scale) > 0.125)
-			setScale(m_scale/2);
+
 	}
 	if (event->button() == Qt::LeftButton)
 	{
@@ -685,8 +686,7 @@ void MapScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 void MapScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-	Q_UNUSED(event)
-	if (core().layer() != Core::EVENT)
+    if (core().layer() != Core::EVENT || core().tool() == Core::ZOOM || event->button() == Qt::RightButton)
 		return;
 
 	// Do not allow putting events on invalid coordinates
