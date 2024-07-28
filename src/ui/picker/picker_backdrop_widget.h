@@ -28,7 +28,7 @@ class PickerBackdropWidget : public PickerChildWidget {
 public:
 	PickerBackdropWidget(QWidget* parent = nullptr) : PickerChildWidget(parent) {}
 
-	void imageChanged(QPixmap image) override;
+    void imageChanged(QPixmap image, QString filename) override;
 
 private:
 	QGraphicsPixmapItem* m_pixmap = nullptr;

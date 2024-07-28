@@ -19,7 +19,8 @@
 #include "ui/viewer/rpg_graphics_view.h"
 #include <QGraphicsScene>
 
-void PickerBackdropWidget::imageChanged(QPixmap image) {
+void PickerBackdropWidget::imageChanged(QPixmap image, QString filename) {
+    Q_UNUSED(filename)
 	if (!m_pixmap) {
 		m_view->setMinimumSize(324, 244);
 		m_view->setMaximumSize(324, 244);

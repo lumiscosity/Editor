@@ -26,8 +26,9 @@ void PickerFacesetWidget::clicked(const QPointF& pos) {
 	updateRect();
 }
 
-void PickerFacesetWidget::imageChanged(QPixmap image) {
-	if (!m_pixmap) {
+void PickerFacesetWidget::imageChanged(QPixmap image, QString filename) {
+    Q_UNUSED(filename)
+    if (!m_pixmap) {
 		m_view->setMinimumSize(196, 196);
 		m_view->setMaximumSize(196, 196);
 		m_pixmap = new QGraphicsPixmapItem(image);

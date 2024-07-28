@@ -28,7 +28,7 @@ class PickerPanoramaWidget : public PickerChildWidget {
 public:
 	PickerPanoramaWidget(QWidget* parent = nullptr) : PickerChildWidget(parent) {}
 
-	void imageChanged(QPixmap image) override;
+    void imageChanged(QPixmap image, QString filename) override;
 
 private:
 	QGraphicsPixmapItem* m_pixmap = nullptr;

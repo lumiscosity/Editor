@@ -98,7 +98,7 @@ void ChangeVehicleGraphicWidget::onParameterChanged(int index, int new_value) {
 }
 
 void ChangeVehicleGraphicWidget::charSetClicked() {
-	auto* widget = new PickerCharsetWidget(m_cmd->parameters[1], this);
+    auto* widget = new PickerCharsetWidget(m_cmd->parameters[1], 1, 2, false, false, this);
 	PickerDialog dialog(m_project, FileFinder::FileType::Image, widget, this);
 	QObject::connect(&dialog, &PickerDialog::fileSelected, [&](const QString& baseName) {
 		m_cmd->string = ToDBString(baseName);

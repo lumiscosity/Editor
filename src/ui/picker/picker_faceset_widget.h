@@ -32,7 +32,7 @@ public:
 
 	void clicked(const QPointF& pos) override;
 
-	void imageChanged(QPixmap image) override;
+    void imageChanged(QPixmap image, QString filename) override;
 
 	int index() const {
 		return m_index;

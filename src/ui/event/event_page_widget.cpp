@@ -24,6 +24,8 @@
 #include "ui/commands/all_commands.h"
 #include "common/dbstring.h"
 #include "common/lcf_widget_binding.h"
+#include <ui/picker/picker_charset_widget.h>
+#include <ui/picker/picker_dialog.h>
 
 EventPageWidget::EventPageWidget(ProjectData& project, QWidget *parent) :
 	QWidget(parent),
@@ -242,20 +244,17 @@ void EventPageWidget::on_spinTimerBSec_valueChanged(int arg1)
 
 void EventPageWidget::on_pushSetSprite_clicked()
 {
-	/* FIXME CharSetPickerDialog dlg(this, true);
-	dlg.setName(ToQString(m_eventPage->character_name));
-	dlg.setFrame(m_eventPage->character_pattern);
-	dlg.setFacing(m_eventPage->character_direction);
-	dlg.setIndex(m_eventPage->character_index);
-	dlg.exec();
-	if (dlg.result() == QDialogButtonBox::Ok)
-	{
-		m_eventPage->character_name = ToDBString(dlg.name());
-		m_eventPage->character_pattern = dlg.frame();
-		m_eventPage->character_direction = dlg.facing();
-		m_eventPage->character_index = dlg.index();
-		updateGraphic();
-	}*/
+    auto* widget = new PickerCharsetWidget(m_eventPage->character_index, m_eventPage->character_pattern, m_eventPage->character_direction, true, true, this);
+    PickerDialog dialog(m_project, FileFinder::FileType::Image, widget, this);
+    QObject::connect(&dialog, &PickerDialog::fileSelected, [&](const QString& baseName) {
+        m_eventPage->character_name = ToDBString(baseName);
+        m_eventPage->character_index = widget->index();
+        m_eventPage->character_direction = widget->direction();
+        m_eventPage->character_pattern = widget->pattern();
+    });
+    dialog.setDirectoryAndFile(CHARSET, ToQString(m_eventPage->character_name));
+    dialog.exec();
+    updateGraphic();
 }
 
 void EventPageWidget::updateGraphic()

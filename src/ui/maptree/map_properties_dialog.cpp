@@ -486,7 +486,7 @@ void MapPropertiesDialog::on_toolSetBGM_clicked() {
 		new_music.tempo = widget->tempo();
 		new_music.balance = widget->balance();
 	});
-	dialog.setDirectoryAndFile(MUSIC, ui->lineBGMname->text());
+    dialog.setDirectoryAndFile(MUSIC, ui->lineBGMname->text());
 	dialog.exec();
 }
 

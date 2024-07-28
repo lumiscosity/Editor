@@ -27,7 +27,7 @@ public:
 
 	virtual void clicked(const QPointF&) {}
 	virtual void fileChanged(const QString&) {}
-	virtual void imageChanged(QPixmap) {};
+    virtual void imageChanged(QPixmap, QString) {};
 
 	void setView(PixmapGraphicsView* view);
 

@@ -430,7 +430,7 @@ void ActorWidget::charSetClicked() {
 		return;
 	}
 
-	auto* widget = new PickerCharsetWidget(m_current->character_index, this);
+    auto* widget = new PickerCharsetWidget(m_current->character_index, 1, 2, false, false, this);
 	PickerDialog dialog(m_project, FileFinder::FileType::Image, widget, this);
 	QObject::connect(&dialog, &PickerDialog::fileSelected, [&](const QString& baseName) {
 		m_current->character_name = ToDBString(baseName);

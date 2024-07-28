@@ -298,6 +298,7 @@ set(EDITOR_SOURCES
 	src/ui/picker/picker_child_widget.h
 	src/ui/picker/picker_charset_widget.cpp
 	src/ui/picker/picker_charset_widget.h
+        src/ui/picker/picker_charset_widget.ui
 	src/ui/picker/picker_faceset_widget.cpp
 	src/ui/picker/picker_faceset_widget.h
 	src/ui/picker/picker_panorama_widget.cpp
@@ -335,7 +336,8 @@ if(APPLE)
 else()
 	# Executable
 	set(EXE_NAME ${PROJECT_NAME})
-	add_executable(${EXE_NAME} WIN32 "src/main.cpp" ${EDITOR_SOURCES})
+        add_executable(${EXE_NAME} WIN32 "src/main.cpp" ${EDITOR_SOURCES}
+            src/ui/picker/picker_charset_widget.ui)
 	if(WIN32)
 		# Open console for Debug builds
 		if(CMAKE_BUILD_TYPE MATCHES "Debug")

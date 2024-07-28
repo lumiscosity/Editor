@@ -35,17 +35,9 @@ PickerDialog::PickerDialog(ProjectData &project, FileFinder::FileType file_type,
 	ui->wrappedWidget = wrappedWidget;
 	ui->sidebar->insertWidget(1, wrappedWidget);
 
-	ui->filesystemView->setRootIsDecorated(false);
-	ui->filesystemView->setHeaderHidden(true);
-
 	m_model = new QFileSystemModel(this);
 	m_model->setReadOnly(true);
 	ui->filesystemView->setModel(m_model);
-
-	// Hide columns except name
-	for (int i = 1; i <= 3; ++i) {
-		ui->filesystemView->setColumnHidden(i, true);
-	}
 
 	QObject::connect(ui->buttonBox, &QDialogButtonBox::clicked, this, &PickerDialog::buttonClicked);
 
@@ -98,7 +90,7 @@ void PickerDialog::setDirectoryAndFile(const QString &dir, const QString& initia
 
 	if (m_file_type == FileFinder::FileType::Image) {
 		QPixmap image = ImageLoader::Load(m_currentFile.absoluteFilePath());
-		ui->wrappedWidget->imageChanged(image);
+        ui->wrappedWidget->imageChanged(image, m_currentFile.fileName());
 	}
 }
 
@@ -107,7 +99,7 @@ void PickerDialog::on_filesystemView_clicked(const QModelIndex &index) {
 	ui->wrappedWidget->fileChanged(m_currentFile.absoluteFilePath());
 	if (m_file_type == FileFinder::FileType::Image) {
 		QPixmap image = ImageLoader::Load(m_currentFile.absoluteFilePath());
-		ui->wrappedWidget->imageChanged(image);
+        ui->wrappedWidget->imageChanged(image, m_currentFile.fileName());
 	}
 }
 
