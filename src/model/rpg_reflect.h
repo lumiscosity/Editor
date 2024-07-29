@@ -59,7 +59,7 @@ class TerrainWidget;
 class AttributeWidget;
 class StateWidget;
 class BattleAnimationWidget;
-class ChipsetWidget;
+class ChipSetWidget;
 class ClassWidget;
 class BattleAnimation2Widget;
 class CommonEventWidget;
@@ -171,7 +171,7 @@ public:
 template<>
 class RpgReflect<lcf::rpg::Chipset> {
 public:
-	using widget_type = ChipsetWidget;
+    using widget_type = ChipSetWidget;
 	using model_type = ChipsetModel;
 
 	static std::vector<lcf::rpg::Chipset>& items(lcf::rpg::Database& database) {

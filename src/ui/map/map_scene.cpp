@@ -23,15 +23,13 @@
 #include <QPainter>
 #include <QScrollBar>
 #include <QStatusBar>
+#include <qmainwindow.h>
 #include <lcf/rpg/event.h>
-#include <iomanip>
-#include <sstream>
 #include "core.h"
 #include "common/dbstring.h"
 #include "ui/event/event_dialog.h"
 #include "ui/other/run_game_dialog.h"
 #include "ui/maptree/map_properties_dialog.h"
-#include "ui/main_window.h"
 #include "undo_draw.h"
 #include "undo_event.h"
 #include <lcf/lmu/reader.h>
