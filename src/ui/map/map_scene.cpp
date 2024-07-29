@@ -460,7 +460,6 @@ void MapScene::on_actionCutEvent() {
 }
 
 void MapScene::on_actionPasteEvent() {
-	// Find first free id
 	int id = getFirstFreeId();
 
 	lcf::rpg::Event event = event_clipboard;

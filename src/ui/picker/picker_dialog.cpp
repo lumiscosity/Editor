@@ -24,6 +24,8 @@
 #include <QGraphicsScene>
 #include <QAbstractButton>
 #include <QDialogButtonBox>
+#include <qpushbutton.h>
+#include <core.h>
 
 PickerDialog::PickerDialog(ProjectData &project, FileFinder::FileType file_type, PickerChildWidget* wrappedWidget, QWidget *parent) :
 		QDialog(parent),
@@ -39,6 +41,11 @@ PickerDialog::PickerDialog(ProjectData &project, FileFinder::FileType file_type,
 	m_model->setReadOnly(true);
 	ui->filesystemView->setModel(m_model);
 
+    // Hide columns except name
+    for (int i = 1; i <= 3; ++i) {
+        ui->filesystemView->setColumnHidden(i, true);
+    }
+
 	QObject::connect(ui->buttonBox, &QDialogButtonBox::clicked, this, &PickerDialog::buttonClicked);
 
 	if (file_type == FileFinder::FileType::Image) {
@@ -51,6 +58,13 @@ PickerDialog::PickerDialog(ProjectData &project, FileFinder::FileType file_type,
 
 PickerDialog::~PickerDialog() {
 	delete ui;
+}
+
+QPushButton* PickerDialog::addActionButton(QString label)
+{
+    auto* button = new QPushButton(label);
+    ui->viewLayout->addWidget(button);
+    return button;
 }
 
 void PickerDialog::buttonClicked(QAbstractButton* button) {
@@ -72,6 +86,27 @@ void PickerDialog::buttonClicked(QAbstractButton* button) {
 		default:
 			break;
 	}
+}
+
+void PickerDialog::setUpperTileFile() {
+    // intentionally set an invalid index to hide selection
+    ui->filesystemView->setCurrentIndex(QModelIndex());
+    // intentionally create an empty fileinfo to spoof base name for saving
+    m_currentFile = QFileInfo();
+    // manually override the graphic
+    QPixmap tileOverview(96, 384);
+    tileOverview.fill(Qt::transparent);
+    core().beginPainting(tileOverview);
+    core().renderTileOverview(Core::ALL_UPPER);
+    core().endPainting();
+    ui->wrappedWidget->imageChanged(tileOverview, "");
+}
+
+void PickerDialog::setDirectory(const QString &dir) {
+    m_dir.setPath(dir);
+    QString path = m_project.project().findDirectory(dir);
+    m_model->setRootPath(path);
+    ui->filesystemView->setRootIndex(m_model->index(path));
 }
 
 void PickerDialog::setDirectoryAndFile(const QString &dir, const QString& initialFile) {

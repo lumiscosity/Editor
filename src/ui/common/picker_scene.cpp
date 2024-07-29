@@ -16,7 +16,6 @@
  */
 
 #include "picker_scene.h"
-
 PickerScene::PickerScene(QObject *parent,
 										   QGraphicsPixmapItem *backgroundItem,
 										   int rowCount,

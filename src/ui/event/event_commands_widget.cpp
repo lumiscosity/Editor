@@ -142,6 +142,7 @@ void EventCommandsWidget::editEvent(QTreeWidgetItem* item, int column) {
 				}
 			}
 		}
+        // FIXME: Code above crashes. Similar code needed for Comment and Comment_2.
 		default: break;
 	}
 

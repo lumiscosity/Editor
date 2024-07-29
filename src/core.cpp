@@ -687,26 +687,45 @@ const std::shared_ptr<Project>& Core::project() const {
 	return m_project;
 }
 
-void Core::beginPainting(QPixmap &dest)
-{
+void Core::beginPainting(QPixmap &dest) {
 	m_painter.begin(&dest);
 	if (m_painter.isActive())
 		m_painter.setBackground(QBrush(m_background));
 	m_painter.setPen(Qt::yellow);
 }
 
-void Core::renderBackground(const QRect &dest_rect)
-{
+void Core::renderBackground(const QRect &dest_rect) {
     m_painter.drawPixmap(dest_rect, m_background);
 }
 
-void Core::renderTile(const short &tile_id, const QRect &dest_rect)
-{
+void Core::renderTile(const short &tile_id, const QRect &dest_rect) {
 	m_painter.drawPixmap(dest_rect, m_tileCache[tile_id]);
 }
 
-void Core::renderEvent(const lcf::rpg::Event& event, const QRect &dest_rect)
-{
+void Core::renderTileOverview(const Core::TileOverviewMode mode) {
+    switch (mode) {
+    case Core::ALL_LOWER:
+        for (int terrain_id = 0; terrain_id < 162; terrain_id++)
+        {
+            QRect rect(((terrain_id)%6)*16,(terrain_id/6)*16,16,16);
+            core().renderTile(core().translate(terrain_id,15), rect);
+        }
+        core().renderTile(core().translate(2,0,240), QRect(32,16,16,16));
+        break;
+    case Core::NONAUTO_LOWER:
+        // TODO: Add this case (required for replace tile command)
+        break;
+    case Core::ALL_UPPER:
+        for (int terrain_id = 0; terrain_id < 144; terrain_id++)
+        {
+            QRect rect(((terrain_id)%6)*16,(terrain_id/6)*16,16,16);
+            core().renderTile(core().translate(terrain_id+162), rect);
+        }
+        break;
+    }
+}
+
+void Core::renderEvent(const lcf::rpg::Event& event, const QRect &dest_rect) {
 	if (event.pages.empty())
 		return;
 

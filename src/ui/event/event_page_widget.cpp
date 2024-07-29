@@ -20,7 +20,6 @@
 #include <QDialogButtonBox>
 #include <QMessageBox>
 #include "core.h"
-#include "stringizer.h"
 #include "ui/commands/all_commands.h"
 #include "common/dbstring.h"
 #include "common/lcf_widget_binding.h"
@@ -78,7 +77,7 @@ EventPageWidget::EventPageWidget(ProjectData& project, QWidget *parent) :
 	ui->comboMoveSpeed->addItem(tr("4: Normal"), lcf::rpg::EventPage::MoveSpeed_normal);
 	ui->comboMoveSpeed->addItem(tr("5: Normal x 2"), lcf::rpg::EventPage::MoveSpeed_double);
 	ui->comboMoveSpeed->addItem(tr("6: Normal x 4"), lcf::rpg::EventPage::MoveSpeed_fourfold);
-	ui->comboMoveSpeed->setCurrentIndex(2);
+    ui->comboMoveSpeed->setCurrentIndex(2);
 
 	m_charaItem = new CharSetGraphicsItem(project);
 	m_tileItem = new QGraphicsPixmapItem();
@@ -244,15 +243,25 @@ void EventPageWidget::on_spinTimerBSec_valueChanged(int arg1)
 
 void EventPageWidget::on_pushSetSprite_clicked()
 {
-    auto* widget = new PickerCharsetWidget(m_eventPage->character_index, m_eventPage->character_pattern, m_eventPage->character_direction, true, true, this);
+    auto* widget = new PickerCharsetWidget(m_eventPage->character_index, m_eventPage->character_pattern, m_eventPage->character_direction, true, this);
     PickerDialog dialog(m_project, FileFinder::FileType::Image, widget, this);
+    dialog.setWindowTitle(tr("Select a CharSet"));
+    auto* button = dialog.addActionButton(tr("Use upper layer tiles"));
     QObject::connect(&dialog, &PickerDialog::fileSelected, [&](const QString& baseName) {
         m_eventPage->character_name = ToDBString(baseName);
         m_eventPage->character_index = widget->index();
         m_eventPage->character_direction = widget->direction();
         m_eventPage->character_pattern = widget->pattern();
     });
-    dialog.setDirectoryAndFile(CHARSET, ToQString(m_eventPage->character_name));
+    QObject::connect(button, &QPushButton::clicked, [&](const bool output) {
+        dialog.setUpperTileFile();
+    });
+    if (m_eventPage->character_name.empty()) {
+        dialog.setDirectory(CHARSET);
+        dialog.setUpperTileFile();
+    } else {
+        dialog.setDirectoryAndFile(CHARSET, ToQString(m_eventPage->character_name));
+    }
     dialog.exec();
     updateGraphic();
 }

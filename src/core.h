@@ -55,6 +55,13 @@ public:
 		FILL
 	};
 
+    enum TileOverviewMode
+    {
+        ALL_LOWER,
+        NONAUTO_LOWER,
+        ALL_UPPER
+    };
+
 	Core();
 
 	static Core* getCore();
@@ -79,6 +86,7 @@ public:
 	void beginPainting(QPixmap &dest);
     void renderBackground(const QRect &dest_rect);
 	void renderTile(const short &tile_id, const QRect &dest_rect);
+    void renderTileOverview(const Core::TileOverviewMode mode);
 	void renderEvent(const lcf::rpg::Event& event, const QRect &dest_rect);
 	void endPainting();
 

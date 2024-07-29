@@ -20,15 +20,14 @@
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 
-PickerCharsetWidget::PickerCharsetWidget(int index, int pattern, int direction, bool showUpper, bool showControls, QWidget *parent) :
+PickerCharsetWidget::PickerCharsetWidget(int index, int pattern, int direction, bool extended, QWidget *parent) :
     PickerChildWidget(parent),
     m_index(index),
     m_pattern(pattern),
     m_direction(direction),
-    m_showUpper(showUpper),
-    m_showControls(showControls),
+    m_extended(extended),
     ui(new Ui::PickerCharsetWidget) {
-    if (showControls) {
+    if (extended) {
         ui->setupUi(this);
 
         switch (m_pattern) {
@@ -67,7 +66,7 @@ PickerCharsetWidget::~PickerCharsetWidget() {
 void PickerCharsetWidget::clicked(const QPointF& pos) {
     int x = static_cast<int>(pos.x() / cell_width);
     int y = static_cast<int>(pos.y() / cell_height);
-	m_index = y * 4 + x;
+    m_index = (m_filename.isEmpty()) ? std::clamp(y * 6 + x, 0, 143) : std::clamp(y * 4 + x, 0, 7);
 	updateRect();
 }
 
@@ -84,33 +83,51 @@ void PickerCharsetWidget::redrawImage(QPixmap image, QString filename) {
         m_pixmap = new QGraphicsPixmapItem();
     }
 
-    if (filename.startsWith("$")) {
-        cell_width = image.width() / 12;
-        cell_height = image.height() / 8;
-    } else if (filename.isEmpty() && m_showUpper) {
-        // empty filename means "use upper layer tile graphic"
+    if (filename.isEmpty() && m_extended) {
+        this->hide();
         cell_width = cell_height = 16;
+        m_pixmap->setPixmap(image);
+        m_view->setItem(m_pixmap);
+        updateRect();
     } else {
-        cell_width = 24;
-        cell_height = 32;
+        if (m_extended){
+            this->show();
+        }
+        if (filename.startsWith("$")) {
+            cell_width = image.width() / 12;
+            cell_height = image.height() / 8;
+        } else {
+            cell_width = 24;
+            cell_height = 32;
+        }
+
+        QPixmap new_image = (filename.isEmpty() && m_extended) ? QPixmap(96, 384) : QPixmap(cell_width * 4, cell_height * 2);
+        new_image.fill(QColor(0,0,0,0));
+
+        QPainter* paint = new QPainter(&new_image);
+        if (filename.isEmpty() && m_extended) {
+            for (int i = 0; i < 8; ++i) {
+                int src_x = (i >= 48) ? ((i % 6) * 16) + 288 : ((i % 6) * 16) + 384;
+                int src_y = (i >= 48) ? ((i / 6) * 16) + 128 : (((i / 6) - 7) * 16);
+                int target_x = (i % 6) * 16;
+                int target_y = (i / 6) * 16;
+                paint->drawPixmap(QRect(target_x, target_y, 16, 16), image, QRect(src_x, src_y, 16, 16));
+            }
+        } else {
+            for (int i = 0; i < 8; ++i) {
+                int src_x = ((i % 4) * cell_width * 3 + (m_pattern * cell_width));
+                int src_y = (i >= 4) ? (m_direction + 4) * cell_height : m_direction * cell_height;
+                int target_x = (i % 4) * cell_width;
+                int target_y = i >= 4 ? cell_height : 0;
+                paint->drawPixmap(QRect(target_x, target_y, cell_width, cell_height), image, QRect(src_x, src_y, cell_width, cell_height));
+            }
+        }
+        delete paint;
+
+        m_pixmap->setPixmap(new_image);
+        m_view->setItem(m_pixmap);
+        updateRect();
     }
-
-    QPixmap new_image(cell_width * 4, cell_height * 2);
-    new_image.fill(QColor(0,0,0,0));
-
-    QPainter* paint = new QPainter(&new_image);
-    for (int i = 0; i < 8; ++i) {
-        int src_x = ((i % 4) * cell_width * 3 + (m_pattern * cell_width));
-        int src_y = (i >= 4) ? (m_direction + 4) * cell_height : m_direction * cell_height;
-        int target_x = (i % 4) * cell_width;
-        int target_y = i >= 4 ? cell_height : 0;
-        paint->drawPixmap(QRect(target_x, target_y, cell_width, cell_height), image, QRect(src_x, src_y, cell_width, cell_height));
-    }
-    delete paint;
-
-    m_pixmap->setPixmap(new_image);
-    m_view->setItem(m_pixmap);
-    updateRect();
 }
 
 void PickerCharsetWidget::updateRect() {
@@ -124,11 +141,19 @@ void PickerCharsetWidget::updateRect() {
 		m_view->scene()->addItem(m_rect);
 	}
 
-    m_rect->setRect(QRect(
-        (m_index % 4) * cell_width,
-        m_index / 4 * cell_height,
-        cell_width,
-        cell_height));
+    if (m_filename.isEmpty()) {
+        m_rect->setRect(QRect(
+            (m_index % 6) * cell_width,
+            m_index / 6 * cell_height,
+            cell_width,
+            cell_height));
+    } else {
+        m_rect->setRect(QRect(
+            (m_index % 4) * cell_width,
+            m_index / 4 * cell_height,
+            cell_width,
+            cell_height));
+    }
 }
 
 void PickerCharsetWidget::on_directionUpButton_clicked()

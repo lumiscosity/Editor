@@ -24,6 +24,7 @@
 #include <QGraphicsScene>
 #include <lcf/rpg/eventcommand.h>
 #include <lcf/rpg/database.h>
+#include <lcf/rpg/map.h>
 #include "ui/viewer/charset_graphics_item.h"
 #include <QProgressBar>
 #include <QLabel>
@@ -67,7 +68,7 @@ private:
 	void updateGraphic();
 
 	Ui::QEventWidget *ui;
-	ProjectData& m_project;
+    ProjectData& m_project;
 	lcf::rpg::EventPage *m_eventPage = nullptr;
 	QGraphicsPixmapItem *m_tileItem = nullptr;
 	CharSetGraphicsItem *m_charaItem = nullptr;

@@ -148,7 +148,7 @@ private:
 	int lst_x;
 	int lst_y;
 	QGraphicsView* m_view;
-	bool m_drawing;
+    bool m_drawing = false;
 	bool m_cancelled;
 	bool m_selecting;
 	bool m_userInteraction = false;

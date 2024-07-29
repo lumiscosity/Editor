@@ -39,7 +39,12 @@ public:
 	explicit PickerDialog(ProjectData& project, FileFinder::FileType file_type = FileFinder::FileType::Default, PickerChildWidget* wrappedWidget = nullptr, QWidget *parent = nullptr);
 	~PickerDialog() override;
 
+    QPushButton* addActionButton(QString label);
+
+    void setDirectory(const QString &dir);
 	void setDirectoryAndFile(const QString& dir, const QString& initialFile);
+
+    void setUpperTileFile();
 
 signals:
 	void fileSelected(QString baseName);

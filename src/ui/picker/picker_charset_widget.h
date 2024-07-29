@@ -33,7 +33,7 @@ class PickerCharsetWidget : public PickerChildWidget {
 	Q_OBJECT
 
 public:
-    explicit PickerCharsetWidget(const int index, const int pattern, const int direction, const bool showUpper, const bool showControls, QWidget* parent = nullptr);
+    explicit PickerCharsetWidget(const int index, const int pattern, const int direction, const bool extended, QWidget* parent = nullptr);
     ~PickerCharsetWidget();
 
 	void clicked(const QPointF& pos) override;
@@ -72,8 +72,7 @@ private:
     int m_index;
     int m_pattern;
     int m_direction;
-    bool m_showUpper;
-    bool m_showControls;
+    bool m_extended;
 	QGraphicsRectItem* m_rect = nullptr;
 	QGraphicsPixmapItem* m_pixmap = nullptr;
 
