@@ -75,7 +75,6 @@ DatabaseDialog::DatabaseDialog(ProjectData& project, QWidget *parent) :
 	ui->tabOld_Pages->insertTab(19, pageVariables, tr("Variables"));
 
 	ui->tabOld_Pages->setCurrentWidget(pageActors);
-	ui->stackedStyle->setCurrentWidget(ui->pageOld);
 }
 
 DatabaseDialog::~DatabaseDialog()
@@ -148,17 +147,6 @@ void DatabaseDialog::on_currentActorChanged(lcf::rpg::Actor */* actor */)
 #endif
 }
 
-void DatabaseDialog::on_tabOld_Pages_currentChanged(int index)
-{
-	ui->listNew_Pages->setCurrentRow(index);
-	emit ui->listNew_Pages->currentRowChanged(index);
-}
-
-void DatabaseDialog::on_toolSwitchStyle_clicked(bool checked)
-{
-	ui->stackedStyle->setCurrentIndex(static_cast<int>(checked));
-}
-
 void DatabaseDialog::on_buttonBox_clicked(QAbstractButton *button)
 {
 	switch(ui->buttonBox->standardButton(button))
@@ -179,12 +167,6 @@ void DatabaseDialog::on_buttonBox_clicked(QAbstractButton *button)
 void DatabaseDialog::on_pushNew_CharacterMax_clicked()
 {
 	/* TODO: resize characters */
-}
-
-void DatabaseDialog::on_lineNew_CharacterFilter_textChanged(const QString &arg1)
-{
-	for (int i = 0; i < ui->listNew_Character->count(); i++)
-		ui->listNew_Character->item(i)->setHidden(ui->listNew_Character->item(i)->text().contains(arg1,Qt::CaseInsensitive));
 }
 
 void DatabaseDialog::on_listNew_Character_currentRowChanged(int currentRow)

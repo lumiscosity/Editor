@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>669</width>
-    <height>751</height>
+    <width>195</width>
+    <height>527</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <item row="0" column="0">
     <widget class="QSplitter" name="splitter">
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -38,7 +38,7 @@
        <item>
         <widget class="QPushButton" name="pushMax">
          <property name="text">
-          <string>Set Maximum number ...</string>
+          <string>Set maximum number ...</string>
          </property>
         </widget>
        </item>
