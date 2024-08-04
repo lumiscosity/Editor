@@ -62,19 +62,7 @@ signals:
 	void currentActorChanged(lcf::rpg::Actor *actor);
 
 public slots:
-	void on_currentActorChanged(lcf::rpg::Actor *actor);
 	void on_buttonBox_clicked(QAbstractButton *button);
-
-private slots:
-	void on_toolSwitchStyle_clicked(bool checked);
-
-	void on_tabOld_Pages_currentChanged(int index);
-
-	void on_lineNew_CharacterFilter_textChanged(const QString &arg1);
-
-	void on_pushNew_CharacterMax_clicked();
-
-	void on_listNew_Character_currentRowChanged(int currentRow);
 
 private:
 	Ui::DatabaseDialog *ui;
