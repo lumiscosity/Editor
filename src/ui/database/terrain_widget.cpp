@@ -16,6 +16,7 @@
  */
 
 #include "terrain_widget.h"
+#include "common/lcf_widget_binding.h"
 #include "ui_terrain_widget.h"
 
 TerrainWidget::TerrainWidget(ProjectData& project, QWidget *parent) :
@@ -24,6 +25,16 @@ TerrainWidget::TerrainWidget(ProjectData& project, QWidget *parent) :
 	m_project(project)
 {
 	ui->setupUi(this);
+
+    LcfWidgetBinding::connect(this, ui->nameLineEdit);
+    LcfWidgetBinding::connect<int32_t>(this, ui->damageSpinBox);
+    LcfWidgetBinding::connect<int32_t>(this, ui->encounterRateSpinBox);
+    // TODO: background_name
+    LcfWidgetBinding::connect<bool>(this, ui->vehicleBoatPassCheckBox);
+    LcfWidgetBinding::connect<bool>(this, ui->vehicleShipPassCheckBox);
+    LcfWidgetBinding::connect<bool>(this, ui->vehicleAirshipPassCheckBox);
+    LcfWidgetBinding::connect<bool>(this, ui->vehicleAirshipLandCheckBox);
+
 }
 
 TerrainWidget::~TerrainWidget()
@@ -31,7 +42,20 @@ TerrainWidget::~TerrainWidget()
 	delete ui;
 }
 
-void TerrainWidget::setData(lcf::rpg::Terrain* /* terrain */)
+void TerrainWidget::setData(lcf::rpg::Terrain* terrain)
 {
+    m_current = terrain ? terrain : &m_dummy;
 
+    LcfWidgetBinding::bind(ui->nameLineEdit, m_current->name);
+    LcfWidgetBinding::bind(ui->damageSpinBox, m_current->damage);
+    LcfWidgetBinding::bind(ui->encounterRateSpinBox, m_current->encounter_rate);
+    // TODO: background_name
+    LcfWidgetBinding::bind(ui->vehicleBoatPassCheckBox, m_current->boat_pass);
+    LcfWidgetBinding::bind(ui->vehicleShipPassCheckBox, m_current->ship_pass);
+    LcfWidgetBinding::bind(ui->vehicleAirshipPassCheckBox, m_current->airship_pass);
+    LcfWidgetBinding::bind(ui->vehicleAirshipLandCheckBox, m_current->airship_land);
+    // TODO: bind player covering radio buttons to bush_depth
+
+
+    this->setEnabled(terrain != nullptr);
 }

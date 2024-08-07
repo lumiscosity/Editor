@@ -84,8 +84,7 @@ DatabaseDialog::~DatabaseDialog()
 void DatabaseDialog::on_buttonBox_clicked(QAbstractButton *button)
 {
 	switch(ui->buttonBox->standardButton(button))
-	{
-		// Standard buttons:
+    {
     case QDialogButtonBox::Apply: {
         m_project = m_projectDataCopy;
         lcf::LDB_Reader::PrepareSave(m_project.database());

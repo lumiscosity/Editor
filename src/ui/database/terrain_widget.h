@@ -41,5 +41,7 @@ public:
 private:
 	Ui::TerrainWidget *ui;
 	ProjectData& m_project;
+    lcf::rpg::Terrain *m_current = nullptr;
+    lcf::rpg::Terrain m_dummy;
 };
 

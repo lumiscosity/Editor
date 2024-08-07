@@ -60,9 +60,6 @@ private slots:
 signals:
 	void currentActorChanged(lcf::rpg::Actor *actor);
 
-protected:
-	void resizeEvent(QResizeEvent * event);
-
 private:
 	Ui::ActorWidget *ui;
 

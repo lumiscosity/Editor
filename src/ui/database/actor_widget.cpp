@@ -395,20 +395,6 @@ void ActorWidget::on_listAttributeRanks_clicked() {
 	}
 }
 
-void ActorWidget::resizeEvent(QResizeEvent *event)
-{
-	Q_UNUSED(event)
-	for (auto& uis : {
-			ui->graphicsHp,
-			ui->graphicsMp,
-			ui->graphicsAtt,
-			ui->graphicsDef,
-			ui->graphicsInt,
-			ui->graphicsAgy }) {
-		uis->scene()->setSceneRect(QRectF(QPointF(0, 0), QSize(uis->size().width() - 4, uis->size().height() - 4)));
-	}
-}
-
 void ActorWidget::faceSetClicked() {
 	if (!m_current) {
 		return;
