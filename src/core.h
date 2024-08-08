@@ -66,8 +66,9 @@ public:
 
 	static Core* getCore();
 
-	void LoadChipset(int n_chipsetid);
-    QSize LoadBackground(QString name);
+    void loadChipset(int n_chipsetid);
+    void cacheChipset(QString name);
+    QSize loadPanorama(QString name);
 
 	int tileSize();
 	void setTileSize(int tileSize);
@@ -82,13 +83,6 @@ public:
 
 	QString gameTitle();
 	void setGameTitle(const QString &gameTitle);
-
-	void beginPainting(QPixmap &dest);
-    void renderBackground(const QRect &dest_rect);
-	void renderTile(const short &tile_id, const QRect &dest_rect);
-    void renderTileOverview(const Core::TileOverviewMode mode);
-	void renderEvent(const lcf::rpg::Event& event, const QRect &dest_rect);
-	void endPainting();
 
 	QColor keycolor();
 
@@ -126,6 +120,7 @@ public:
 
 	std::shared_ptr<Project>& project();
 	const std::shared_ptr<Project>& project() const;
+    QMap<int, QPixmap> &getCachedTileset(QString chipset);
 signals:
 	void toolChanged();
 
@@ -143,8 +138,9 @@ private:
 	QColor m_keycolor;
 	Layer m_layer;
 	Tool m_tool;
-	QPixmap m_background;
-	QMap<int, QPixmap> m_tileCache;
+    QPixmap m_panorama;
+    QMap<QString, QMap<int, QPixmap>> m_tilesetCache;
+    // QMap<int, QPixmap> m_tileCache;
 	QMap<QString, QPixmap> m_eventCache;
 	QMap<int, short> m_dictionary;
 	QMap<int, lcf::rpg::Map> m_maps;

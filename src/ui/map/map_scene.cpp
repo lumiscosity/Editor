@@ -87,10 +87,10 @@ MapScene::MapScene(ProjectData& project, int id, QGraphicsView *view, QObject *p
 	connect(actions[7],SIGNAL(triggered()),this,SLOT(on_actionDeleteEvent()));
 
 	m_eventMenu->addActions(actions);
-    m_background = new QGraphicsPixmapItem();
+    m_panorama = new QGraphicsPixmapItem();
 	m_lowerpix = new QGraphicsPixmapItem();
 	m_upperpix = new QGraphicsPixmapItem();
-    addItem(m_background);
+    addItem(m_panorama);
 	addItem(m_lowerpix);
 	addItem(m_upperpix);
 	Load();
@@ -104,7 +104,7 @@ MapScene::MapScene(ProjectData& project, int id, QGraphicsView *view, QObject *p
 	m_selecting = false;
     QGraphicsOpacityEffect * effect = new QGraphicsOpacityEffect(this);
     effect->setOpacity(0.7);
-    m_background->setGraphicsEffect(effect);
+    m_panorama->setGraphicsEffect(effect);
 	m_lowerpix->setGraphicsEffect(effect);
 	m_upperpix->setGraphicsEffect(new QGraphicsOpacityEffect(this));
 	onLayerChanged();
@@ -1037,9 +1037,9 @@ int MapScene::getFirstFreeId() {
 void MapScene::redrawPanorama() {
     QSize panorama_size;
 	if (m_map->parallax_flag) {
-        panorama_size = core().LoadBackground(m_map->parallax_name.c_str());
+        panorama_size = core().loadPanorama(m_map->parallax_name.c_str());
 	} else {
-        panorama_size = core().LoadBackground(QString());
+        panorama_size = core().loadPanorama(QString());
 	}
     QSize size = getViewportContentSize();
     int panorama_width = (int)(((float)s_tileSize / 16) * panorama_size.width());
@@ -1060,11 +1060,11 @@ void MapScene::redrawPanorama() {
                             ((y-start_y)* panorama_height) - h_offset,
                             panorama_width,
                             panorama_height);
-            core().renderBackground(dest_rect);
+            core().renderPanorama(dest_rect);
         }
     core().endPainting();
-    m_background->setPixmap(pix);
-    m_background->setPos(m_view->horizontalScrollBar()->value(), m_view->verticalScrollBar()->value());
+    m_panorama->setPixmap(pix);
+    m_panorama->setPos(m_view->horizontalScrollBar()->value(), m_view->verticalScrollBar()->value());
 }
 
 void MapScene::redrawGrid() {

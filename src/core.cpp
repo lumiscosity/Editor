@@ -104,7 +104,7 @@ Core *Core::getCore()
 	return core_instance;
 }
 
-void Core::LoadChipset(int n_chipsetid)
+void Core::loadChipset(int n_chipsetid)
 {
 	if (n_chipsetid == m_chipset.ID)
 		return;
@@ -114,13 +114,14 @@ void Core::LoadChipset(int n_chipsetid)
 			m_chipset = chipset;
 			break;
 		}
-	if (m_chipset.ID == 0)
-	{
-		m_tileCache.clear();
-		return;
-	}
 
 	const QString chipset_name = ToQString(m_chipset.chipset_name);
+    if (!m_tilesetCache.contains(chipset_name)) {
+        cacheChipset(chipset_name);
+    }
+}
+
+void Core::cacheChipset(QString chipset_name) {
 	QPixmap o_chipset = ImageLoader::Load(project()->findFile(CHIPSET, chipset_name, FileFinder::FileType::Image));
 	if (!o_chipset)
 		o_chipset = ImageLoader::Load(rtpPath(CHIPSET, chipset_name));
@@ -142,8 +143,9 @@ void Core::LoadChipset(int n_chipsetid)
 	int r_tileSize = o_chipset.width()/30;
 	int r_tileHalf = r_tileSize/2;
 
+    auto &cache_dest = m_tilesetCache[chipset_name];
+
 	/* BindWaterTiles */
-	m_tileCache.clear();
 
 	/*
 	 * TileIDs:
@@ -152,7 +154,7 @@ void Core::LoadChipset(int n_chipsetid)
 	 * 2- DeepWater
 	 * 3- Ground
 	 */
-	//Go throught all posible combinations
+    //Go through all posible combinations
 	for (int terrain_id = 0; terrain_id < 4; terrain_id++)
 	for (int tile_u = 0; tile_u < 4; tile_u++)
 	for (int tile_d = 0; tile_d < 4; tile_d++)
@@ -212,7 +214,7 @@ void Core::LoadChipset(int n_chipsetid)
 			dr = DOWNRIGHT;
 		_code += ul+ur+dl+dr;
 		short id = translate(terrain_id,_code,_scode);
-		if (!m_tileCache[id].isNull()) //item exist?
+        if (!cache_dest[id].isNull()) //item exist?
 			continue;
 		// Water B uses second block of 3x4 tiles for borders
 		// Water A and Deep Water uses first block
@@ -297,7 +299,7 @@ void Core::LoadChipset(int n_chipsetid)
 				blit(0, r_tileSize*13/2);
 		}
 #undef blit
-		m_tileCache[id] = p_tile;
+        cache_dest[id] = p_tile;
 	}
 
 	/* Register AnimationTiles */
@@ -306,15 +308,15 @@ void Core::LoadChipset(int n_chipsetid)
 	QPainter a(&a_tile);
 	a.drawPixmap(0,0,tileSize(),tileSize(),o_chipset.copy(3*r_tileSize,4*r_tileSize,r_tileSize,r_tileSize));
 	for (int i = 0; i < 50; i++) {
-		m_tileCache[translate(3) + i] = a_tile;
+        cache_dest[translate(3) + i] = a_tile;
 	}
 	a.drawPixmap(0,0,tileSize(),tileSize(),o_chipset.copy(4*r_tileSize,4*r_tileSize,r_tileSize,r_tileSize));
 	for (int i = 0; i < 50; i++) {
-		m_tileCache[translate(4) + i] = a_tile;
+        cache_dest[translate(4) + i] = a_tile;
 	}
 	a.drawPixmap(0,0,tileSize(),tileSize(),o_chipset.copy(5*r_tileSize,4*r_tileSize,r_tileSize,r_tileSize));
 	for (int i = 0; i < 50; i++) {
-		m_tileCache[translate(5) + i] = a_tile;
+        cache_dest[translate(5) + i] = a_tile;
 	}
 
 	/* BindGroundTiles */
@@ -371,7 +373,7 @@ void Core::LoadChipset(int n_chipsetid)
 				dr = DOWNRIGHT;
 
 			short id = translate (terrain_id, u+d+l+r+ul+ur+dl+dr);
-			if (!m_tileCache[id].isNull()) //item exist?
+            if (!cache_dest[id].isNull()) //item exist?
 				continue;
 
 			/*
@@ -520,7 +522,7 @@ void Core::LoadChipset(int n_chipsetid)
 			/*
 			 * Register tile
 			 */
-			m_tileCache[id] = p_tile;
+            cache_dest[id] = p_tile;
 		}
 
 		terrain_id++;
@@ -552,7 +554,7 @@ void Core::LoadChipset(int n_chipsetid)
 			ef.drawPixmap(0,0,tileSize(),tileSize(),o_chipset.copy(orig_x,orig_y,r_tileSize,r_tileSize));
 			ef.end();
 			ef_tile.setMask(a_tile.createMaskFromColor(m_keycolor));
-			m_tileCache[translate(terrain_id)] = ef_tile;
+            cache_dest[translate(terrain_id)] = ef_tile;
 			terrain_id++;
 		}
 
@@ -562,19 +564,22 @@ void Core::LoadChipset(int n_chipsetid)
 			tile_row = 0;
 			tileset_col++;
 		}
-	}
-
-	emit chipsetChanged();
+    }
 }
 
-QSize Core::LoadBackground(QString name)
+QSize Core::loadPanorama(QString name)
 {
-	if (name.isEmpty()) {
-        m_background = QPixmap(640,480);
-		m_background.fill(Qt::black);
-	} else
-		m_background = ImageLoader::Load(project()->findFile(PANORAMA, name, FileFinder::FileType::Image));
-    return m_background.size();
+    QPixmap panorama = ImageLoader::Load(project()->findFile(PANORAMA, name, FileFinder::FileType::Image));
+    if (!panorama)
+        panorama = ImageLoader::Load(rtpPath(PANORAMA, name));
+    if (!panorama)
+    {
+        panorama = QPixmap(640, 320);
+        panorama.fill(Qt::black);
+    }
+
+    m_panorama = panorama;
+    return m_panorama.size();
 }
 
 int Core::tileSize()
@@ -685,77 +690,6 @@ std::shared_ptr<Project>& Core::project() {
 
 const std::shared_ptr<Project>& Core::project() const {
 	return m_project;
-}
-
-void Core::beginPainting(QPixmap &dest) {
-	m_painter.begin(&dest);
-	if (m_painter.isActive())
-		m_painter.setBackground(QBrush(m_background));
-	m_painter.setPen(Qt::yellow);
-}
-
-void Core::renderBackground(const QRect &dest_rect) {
-    m_painter.drawPixmap(dest_rect, m_background);
-}
-
-void Core::renderTile(const short &tile_id, const QRect &dest_rect) {
-	m_painter.drawPixmap(dest_rect, m_tileCache[tile_id]);
-}
-
-void Core::renderTileOverview(const Core::TileOverviewMode mode) {
-    switch (mode) {
-    case Core::ALL_LOWER:
-        for (int terrain_id = 0; terrain_id < 162; terrain_id++)
-        {
-            QRect rect(((terrain_id)%6)*16,(terrain_id/6)*16,16,16);
-            core().renderTile(core().translate(terrain_id,15), rect);
-        }
-        core().renderTile(core().translate(2,0,240), QRect(32,16,16,16));
-        break;
-    case Core::NONAUTO_LOWER:
-        // TODO: Add this case (required for replace tile command)
-        break;
-    case Core::ALL_UPPER:
-        for (int terrain_id = 0; terrain_id < 144; terrain_id++)
-        {
-            QRect rect(((terrain_id)%6)*16,(terrain_id/6)*16,16,16);
-            core().renderTile(core().translate(terrain_id+162), rect);
-        }
-        break;
-    }
-}
-
-void Core::renderEvent(const lcf::rpg::Event& event, const QRect &dest_rect) {
-	if (event.pages.empty())
-		return;
-
-	const int fact = dest_rect.width();
-	QRect final_rect = dest_rect.adjusted(fact/6,fact/6,-fact/6,-fact/6);
-	m_painter.drawRect(final_rect.adjusted(-1,-1,0,0));
-	if (event.pages[0].character_name.empty())
-		renderTile(static_cast<short>(event.pages[0].character_index+10000), final_rect);
-	else {
-
-		QString check = ToQString(event.pages[0].character_name);
-		int offset = (event.pages[0].character_index * 32 + event.pages[0].character_direction * 4 + event.pages[0].character_pattern);
-		QString offset_string = QString::number(offset);
-        offset_string = offset_string.leftJustified(3, u'0');
-        check.append(offset_string);
-
-        if (!m_eventCache.contains(check))
-			cacheEvent(&event, check);
-		m_painter.drawPixmap(final_rect, m_eventCache.value(check), QRect(0,6,24,24));
-	}
-}
-
-void Core::endPainting()
-{
-	m_painter.end();
-}
-
-QColor Core::keycolor()
-{
-	return m_keycolor;
 }
 
 short Core::translate(int terrain_id, int _code, int _scode)
@@ -905,8 +839,8 @@ void Core::cacheEvent(const lcf::rpg::Event* ev, QString key) {
 	}
 
 	int char_index = evp.character_index;
-	int src_x = (char_index%4)*72 + evp.character_pattern * 24;
-	int src_y = (char_index/4)*128 + evp.character_direction * 32;
+    int src_x = (char_index%4)*charset.width()/4 + evp.character_pattern * charset.width()/12;
+    int src_y = (char_index/4)*charset.height()/2 + evp.character_direction * charset.height()/8;
 
 	m_eventCache[key] = charset.copy(src_x, src_y, 24, 32);
 }
@@ -923,4 +857,8 @@ QPixmap Core::createDummyPixmap(int width, int height)
 	p.drawTiledPixmap(0, 0, width, height, QPixmap(":/embedded/share/old_grid.png"));
 	p.end();
 	return dummy;
+}
+
+QMap<int, QPixmap> &Core::getCachedTileset(QString chipset) {
+    return m_tilesetCache[chipset];
 }

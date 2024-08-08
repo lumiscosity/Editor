@@ -128,7 +128,7 @@ private:
 
 
 	QMenu *m_eventMenu;
-    QGraphicsPixmapItem *m_background;
+    QGraphicsPixmapItem *m_panorama;
 	QGraphicsPixmapItem *m_lowerpix;
 	QGraphicsPixmapItem *m_upperpix;
 	QGraphicsItemGroup* m_lines;
