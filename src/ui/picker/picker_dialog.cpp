@@ -96,9 +96,9 @@ void PickerDialog::setUpperTileFile() {
     // manually override the graphic
     QPixmap tileOverview(96, 384);
     tileOverview.fill(Qt::transparent);
-    core().beginPainting(tileOverview);
-    core().renderTileOverview(Core::ALL_UPPER);
-    core().endPainting();
+    m_painter.beginPainting(tileOverview);
+    m_painter.renderTileOverview(RpgPainter::ALL_UPPER);
+    m_painter.endPainting();
     ui->wrappedWidget->imageChanged(tileOverview, "");
 }
 

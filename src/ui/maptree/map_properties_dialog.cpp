@@ -152,67 +152,67 @@ MapPropertiesDialog::MapPropertiesDialog(ProjectData& project, lcf::rpg::MapInfo
 	{
 
 	pix.fill();
-	core().beginPainting(pix);
-	core().renderTile(m_map_copy.generator_tile_ids[0], QRect(0,0,32,32));
-	core().endPainting();
+    m_painter.beginPainting(pix);
+    m_painter.renderTile(m_map_copy.generator_tile_ids[0], QRect(0,0,32,32));
+    m_painter.endPainting();
 	m_ceilingItem->setPixmap(pix);
 
 	pix.fill();
-	core().beginPainting(pix);
-	core().renderTile(m_map_copy.generator_tile_ids[1], QRect(0,0,32,32));
-	core().endPainting();
+    m_painter.beginPainting(pix);
+    m_painter.renderTile(m_map_copy.generator_tile_ids[1], QRect(0,0,32,32));
+    m_painter.endPainting();
 	m_lowerWallItem->setPixmap(pix);
 
 	pix.fill();
-	core().beginPainting(pix);
-	core().renderTile(m_map_copy.generator_tile_ids[2], QRect(0,0,32,32));
-	core().endPainting();
+    m_painter.beginPainting(pix);
+    m_painter.renderTile(m_map_copy.generator_tile_ids[2], QRect(0,0,32,32));
+    m_painter.endPainting();
 	m_upperWallItem->setPixmap(pix);
 
 	pix.fill();
-	core().beginPainting(pix);
-	core().renderTile(m_map_copy.generator_tile_ids[3], QRect(0,0,32,32));
-	core().endPainting();
+    m_painter.beginPainting(pix);
+    m_painter.renderTile(m_map_copy.generator_tile_ids[3], QRect(0,0,32,32));
+    m_painter.endPainting();
 	m_floorAItem->setPixmap(pix);
 
 	pix.fill();
-	core().beginPainting(pix);
-	core().renderTile(m_map_copy.generator_tile_ids[4], QRect(0,0,32,32));
-	core().endPainting();
+    m_painter.beginPainting(pix);
+    m_painter.renderTile(m_map_copy.generator_tile_ids[4], QRect(0,0,32,32));
+    m_painter.endPainting();
 	m_floorBItem->setPixmap(pix);
 
 	pix.fill();
-	core().beginPainting(pix);
-	core().renderTile(m_map_copy.generator_tile_ids[5], QRect(0,0,32,32));
-	core().endPainting();
+    m_painter.beginPainting(pix);
+    m_painter.renderTile(m_map_copy.generator_tile_ids[5], QRect(0,0,32,32));
+    m_painter.endPainting();
 	m_floorCItem->setPixmap(pix);
 
 	pix = QPixmap(64, 64);
 	pix.fill();
-	core().beginPainting(pix);
-	core().renderTile(m_map_copy.generator_tile_ids[6], QRect(0,0,32,32));
-	core().renderTile(m_map_copy.generator_tile_ids[7], QRect(32,0,32,32));
-	core().renderTile(m_map_copy.generator_tile_ids[8], QRect(0,32,32,32));
-	core().renderTile(m_map_copy.generator_tile_ids[9], QRect(32,32,32,32));
-	core().endPainting();
+    m_painter.beginPainting(pix);
+    m_painter.renderTile(m_map_copy.generator_tile_ids[6], QRect(0,0,32,32));
+    m_painter.renderTile(m_map_copy.generator_tile_ids[7], QRect(32,0,32,32));
+    m_painter.renderTile(m_map_copy.generator_tile_ids[8], QRect(0,32,32,32));
+    m_painter.renderTile(m_map_copy.generator_tile_ids[9], QRect(32,32,32,32));
+    m_painter.endPainting();
 	m_ObstacleAItem->setPixmap(pix);
 
 	pix.fill();
-	core().beginPainting(pix);
-	core().renderTile(m_map_copy.generator_tile_ids[10], QRect(0,0,32,32));
-	core().renderTile(m_map_copy.generator_tile_ids[11], QRect(32,0,32,32));
-	core().renderTile(m_map_copy.generator_tile_ids[12], QRect(0,32,32,32));
-	core().renderTile(m_map_copy.generator_tile_ids[13], QRect(32,32,32,32));
-	core().endPainting();
+    m_painter.beginPainting(pix);
+    m_painter.renderTile(m_map_copy.generator_tile_ids[10], QRect(0,0,32,32));
+    m_painter.renderTile(m_map_copy.generator_tile_ids[11], QRect(32,0,32,32));
+    m_painter.renderTile(m_map_copy.generator_tile_ids[12], QRect(0,32,32,32));
+    m_painter.renderTile(m_map_copy.generator_tile_ids[13], QRect(32,32,32,32));
+    m_painter.endPainting();
 	m_ObstacleBItem->setPixmap(pix);
 
 	pix.fill();
-	core().beginPainting(pix);
-	core().renderTile(m_map_copy.generator_tile_ids[14], QRect(0,0,32,32));
-	core().renderTile(m_map_copy.generator_tile_ids[15], QRect(32,0,32,32));
-	core().renderTile(m_map_copy.generator_tile_ids[16], QRect(0,32,32,32));
-	core().renderTile(m_map_copy.generator_tile_ids[17], QRect(32,32,32,32));
-	core().endPainting();
+    m_painter.beginPainting(pix);
+    m_painter.renderTile(m_map_copy.generator_tile_ids[14], QRect(0,0,32,32));
+    m_painter.renderTile(m_map_copy.generator_tile_ids[15], QRect(32,0,32,32));
+    m_painter.renderTile(m_map_copy.generator_tile_ids[16], QRect(0,32,32,32));
+    m_painter.renderTile(m_map_copy.generator_tile_ids[17], QRect(32,32,32,32));
+    m_painter.endPainting();
 	m_ObstacleCItem->setPixmap(pix);
 	}
 	if (m_map_copy.parallax_flag)

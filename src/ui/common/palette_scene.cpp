@@ -59,7 +59,7 @@ void PaletteScene::onLayerChange()
 
 void PaletteScene::onChipsetChange()
 {
-	if (core().chipsetIsNull())
+    if (false)
 	{
 		m_tiles->setVisible(false);
 		m_selectionItem->setVisible(false);
@@ -71,12 +71,12 @@ void PaletteScene::onChipsetChange()
     m_upperTiles = QPixmap(96, 400);
     m_lowerTiles.fill(Qt::transparent);
     m_upperTiles.fill(Qt::transparent);
-    core().beginPainting(m_lowerTiles);
-    core().renderTileOverview(Core::ALL_LOWER);
-	core().endPainting();
-	core().beginPainting(m_upperTiles);
-    core().renderTileOverview(Core::ALL_UPPER);
-	core().endPainting();
+    m_painter.beginPainting(m_lowerTiles);
+    m_painter.renderTileOverview(RpgPainter::ALL_LOWER);
+    m_painter.endPainting();
+    m_painter.beginPainting(m_upperTiles);
+    m_painter.renderTileOverview(RpgPainter::ALL_UPPER);
+    m_painter.endPainting();
 	onLayerChange();
 }
 

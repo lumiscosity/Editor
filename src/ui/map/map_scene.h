@@ -29,6 +29,7 @@
 #include <memory>
 #include <lcf/rpg/map.h>
 #include <lcf/rpg/mapinfo.h>
+#include <ui/rpg_painter.h>
 #include "core.h"
 
 class ProjectData;
@@ -156,5 +157,6 @@ private:
 	lcf::rpg::Event event_clipboard;
 	bool event_clipboard_set = false;
 	QList<QGraphicsItem*> grid_lines;
+    RpgPainter m_painter;
 };
 

@@ -263,7 +263,7 @@ void MapScene::redrawMap()
 {
 	if (!m_init)
 		return;
-	core().LoadChipset(m_map->chipset_id);
+    core().loadChipset(m_map->chipset_id);
 	s_tileSize = core().tileSize() * static_cast<double>(m_scale);
     redrawPanorama();
 	redrawLayer(Core::LOWER);
@@ -721,10 +721,10 @@ void MapScene::redrawTile(const Core::Layer &layer,
 	switch (layer)
 	{
 	case (Core::LOWER):
-		core().renderTile(m_lower[static_cast<size_t>(_index(x,y))],dest_rec);
+        m_painter.renderTile(m_lower[static_cast<size_t>(_index(x,y))],dest_rec);
 		break;
 	case (Core::UPPER):
-		core().renderTile(m_upper[static_cast<size_t>(_index(x,y))],dest_rec);
+        m_painter.renderTile(m_upper[static_cast<size_t>(_index(x,y))],dest_rec);
 		break;
 	default:
 		break;
@@ -785,7 +785,7 @@ void MapScene::redrawLayer(Core::Layer layer)
     int end_x = start_x+(size.width()-1)/s_tileSize;
     int end_y = start_y+(size.height()-1)/s_tileSize;
 	pix.fill(QColor(0,0,0,0));
-	core().beginPainting(pix);
+    m_painter.beginPainting(pix);
 	for (int x = start_x; x <= end_x; x++)
 		for (int y = start_y; y <= end_y; y++)
 		{
@@ -805,10 +805,10 @@ void MapScene::redrawLayer(Core::Layer layer)
 					   (m_map->events[i].y-start_y)* s_tileSize,
 					   s_tileSize,
 					   s_tileSize);
-			core().renderEvent(m_map->events[i], rect);
+            m_painter.renderEvent(m_map->events[i], rect);
 		}
 	}
-	core().endPainting();
+    m_painter.endPainting();
 	if (layer == Core::LOWER)
 	{
 		m_lowerpix->setPixmap(pix);
@@ -1036,10 +1036,12 @@ int MapScene::getFirstFreeId() {
 
 void MapScene::redrawPanorama() {
     QSize panorama_size;
+    QString panorama_name;
 	if (m_map->parallax_flag) {
-        panorama_size = core().loadPanorama(m_map->parallax_name.c_str());
+        panorama_name = m_map->parallax_name.c_str();
+        panorama_size = core().loadPanorama(panorama_name);
 	} else {
-        panorama_size = core().loadPanorama(QString());
+        panorama_size = core().loadPanorama(panorama_name);
 	}
     QSize size = getViewportContentSize();
     int panorama_width = (int)(((float)s_tileSize / 16) * panorama_size.width());
@@ -1052,7 +1054,7 @@ void MapScene::redrawPanorama() {
     int h_offset = m_view->verticalScrollBar()->value()%panorama_height;
     QPixmap pix(size);
     pix.fill(QColor(0,0,0,255));
-    core().beginPainting(pix);
+    m_painter.beginPainting(pix);
     for (int x = start_x; x <= end_x; x++)
         for (int y = start_y; y <= end_y; y++)
         {
@@ -1060,9 +1062,9 @@ void MapScene::redrawPanorama() {
                             ((y-start_y)* panorama_height) - h_offset,
                             panorama_width,
                             panorama_height);
-            core().renderPanorama(dest_rect);
+            m_painter.renderPanorama(dest_rect, panorama_name);
         }
-    core().endPainting();
+    m_painter.endPainting();
     m_panorama->setPixmap(pix);
     m_panorama->setPos(m_view->horizontalScrollBar()->value(), m_view->verticalScrollBar()->value());
 }

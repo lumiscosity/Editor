@@ -25,6 +25,7 @@
 #include <lcf/rpg/eventcommand.h>
 #include <lcf/rpg/database.h>
 #include <lcf/rpg/map.h>
+#include <ui/rpg_painter.h>
 #include "ui/viewer/charset_graphics_item.h"
 #include <QProgressBar>
 #include <QLabel>
@@ -74,5 +75,6 @@ private:
 	CharSetGraphicsItem *m_charaItem = nullptr;
 	QGraphicsScene *m_scene = nullptr;
 	QGraphicsOpacityEffect *m_effect = nullptr;
+    RpgPainter m_painter;
 };
 

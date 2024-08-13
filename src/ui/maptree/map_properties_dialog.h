@@ -22,6 +22,7 @@
 #include <QTableWidgetItem>
 #include <lcf/rpg/mapinfo.h>
 #include <lcf/rpg/map.h>
+#include <ui/rpg_painter.h>
 #include "ui/common/encounter_delegate.h"
 #include <QButtonGroup>
 
@@ -103,5 +104,7 @@ private:
 	QButtonGroup* m_buttonGroupTeleport = nullptr;
 	QButtonGroup* m_buttonGroupEscape = nullptr;
 	QButtonGroup* m_buttonGroupSave = nullptr;
+
+    RpgPainter m_painter;
 };
 

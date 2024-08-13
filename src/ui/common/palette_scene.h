@@ -21,6 +21,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsItem>
 #include <QGraphicsRectItem>
+#include <ui/rpg_painter.h>
 #include "core.h"
 
 class PaletteScene : public QGraphicsScene
@@ -55,6 +56,7 @@ protected:
 	QRectF last_selection;
 	QPointF m_initial;
 	QPointF m_current;
+    RpgPainter m_painter;
 
 };
 

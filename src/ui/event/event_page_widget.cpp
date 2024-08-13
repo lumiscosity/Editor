@@ -272,9 +272,9 @@ void EventPageWidget::updateGraphic()
 	{
 		QPixmap pix(16,16);
 		pix.fill(QColor(0,0,0,0));
-		core().beginPainting(pix);
-		core().renderTile(10000 + static_cast<short>(m_eventPage->character_index), QRect(0,0,16,16));
-		core().endPainting();
+        m_painter.beginPainting(pix);
+        m_painter.renderTile(10000 + static_cast<short>(m_eventPage->character_index), QRect(0,0,16,16));
+        m_painter.endPainting();
 		m_tileItem->setPixmap(pix);
 		m_tileItem->setVisible(true);
 		m_charaItem->setVisible(false);

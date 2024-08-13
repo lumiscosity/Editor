@@ -116,7 +116,7 @@ void Core::loadChipset(int n_chipsetid)
 		}
 
 	const QString chipset_name = ToQString(m_chipset.chipset_name);
-    if (!m_tilesetCache.contains(chipset_name)) {
+    if (!m_chipsetCache.contains(chipset_name)) {
         cacheChipset(chipset_name);
     }
 }
@@ -143,7 +143,7 @@ void Core::cacheChipset(QString chipset_name) {
 	int r_tileSize = o_chipset.width()/30;
 	int r_tileHalf = r_tileSize/2;
 
-    auto &cache_dest = m_tilesetCache[chipset_name];
+    auto &cache_dest = m_chipsetCache[chipset_name];
 
 	/* BindWaterTiles */
 
@@ -859,6 +859,14 @@ QPixmap Core::createDummyPixmap(int width, int height)
 	return dummy;
 }
 
-QMap<int, QPixmap> &Core::getCachedTileset(QString chipset) {
-    return m_tilesetCache[chipset];
+QMap<short, QPixmap> &Core::getCachedChipset(QString chipset) {
+    return m_chipsetCache[chipset];
+}
+
+QString Core::getChipset() {
+    return ToQString(m_chipset.name);
+}
+
+QMap<QString, QPixmap> &Core::getEventCache() {
+    return m_eventCache;
 }

@@ -1,8 +1,27 @@
 #include "rpg_painter.h"
 #include "common/dbstring.h"
 
-RpgPainter::RpgPainter() {
 
+
+RpgPainter::RpgPainter() {
+    // FIXME: split the current chipset info from core maybe?
+    setCachedChipset(core().getChipset().isNull() ? QString() : core().getChipset());
+    m_eventCache = &core().getEventCache();
+}
+
+enum TileOverviewMode
+{
+    ALL_LOWER,
+    NONAUTO_LOWER,
+    ALL_UPPER
+};
+
+void RpgPainter::setCachedChipset(QString chipset) {
+    if (!core().getChipset().isEmpty()){
+        core().cacheChipset(core().getChipset());
+    }
+    m_chipset = chipset;
+    m_chipsetCache = &core().getCachedChipset(chipset);
 }
 
 void RpgPainter::beginPainting(QPixmap &dest) {
@@ -15,12 +34,12 @@ void RpgPainter::renderPanorama(const QRect &dest_rect, QPixmap panorama) {
 }
 
 void RpgPainter::renderTile(const short &tile_id, const QRect &dest_rect) {
-    this->drawPixmap(dest_rect, core().getCachedTileset(m_chipset)[tile_id]);
+    this->drawPixmap(dest_rect, m_chipsetCache->value(tile_id));
 }
 
-void RpgPainter::renderTileOverview(const Core::TileOverviewMode mode) {
+void RpgPainter::renderTileOverview(const TileOverviewMode mode) {
     switch (mode) {
-    case Core::ALL_LOWER:
+    case ALL_LOWER:
         for (int terrain_id = 0; terrain_id < 162; terrain_id++)
         {
             QRect rect(((terrain_id)%6)*16,(terrain_id/6)*16,16,16);
@@ -28,14 +47,14 @@ void RpgPainter::renderTileOverview(const Core::TileOverviewMode mode) {
         }
         renderTile(core().translate(2,0,240), QRect(32,16,16,16));
         break;
-    case Core::NONAUTO_LOWER:
+    case NONAUTO_LOWER:
         for (int terrain_id = 0; terrain_id < 144; terrain_id++)
         {
             QRect rect(((terrain_id)%6)*16,(terrain_id/6)*16,16,16);
             renderTile(core().translate(terrain_id+18), rect);
         }
         break;
-    case Core::ALL_UPPER:
+    case ALL_UPPER:
         for (int terrain_id = 0; terrain_id < 144; terrain_id++)
         {
             QRect rect(((terrain_id)%6)*16,(terrain_id/6)*16,16,16);
@@ -62,9 +81,9 @@ void RpgPainter::renderEvent(const lcf::rpg::Event& event, const QRect &dest_rec
         offset_string = offset_string.leftJustified(3, u'N');
         check.append(offset_string);
 
-        if (!m_eventCache.contains(check))
-            cacheEvent(&event, check);
-        this->drawPixmap(final_rect, m_eventCache.value(check), QRect(0,6,24,24));
+        if (!m_eventCache->contains(check))
+            core().cacheEvent(&event, check);
+        this->drawPixmap(final_rect, m_eventCache->value(check), QRect(0,6,24,24));
     }
 }
 

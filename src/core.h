@@ -55,13 +55,6 @@ public:
 		FILL
 	};
 
-    enum TileOverviewMode
-    {
-        ALL_LOWER,
-        NONAUTO_LOWER,
-        ALL_UPPER
-    };
-
 	Core();
 
 	static Core* getCore();
@@ -89,7 +82,7 @@ public:
 	short translate(int terrain_id, int _code = 0, int _scode = 0);
 	int translate(short tile_id);
 
-	inline bool chipsetIsNull() {return m_tileCache[0].isNull();}
+    inline bool chipsetIsNull(QString chipset) {return m_chipsetCache[chipset][0].isNull();}
 	QPixmap createDummyPixmap(int width, int height);
 
 	bool isWater(int terrain_id);
@@ -120,7 +113,9 @@ public:
 
 	std::shared_ptr<Project>& project();
 	const std::shared_ptr<Project>& project() const;
-    QMap<int, QPixmap> &getCachedTileset(QString chipset);
+    QMap<short, QPixmap> &getCachedChipset(QString chipset);
+    QString getChipset();
+    QMap<QString, QPixmap> &getEventCache();
 signals:
 	void toolChanged();
 
@@ -139,7 +134,7 @@ private:
 	Layer m_layer;
 	Tool m_tool;
     QPixmap m_panorama;
-    QMap<QString, QMap<int, QPixmap>> m_tilesetCache;
+    QMap<QString, QMap<short, QPixmap>> m_chipsetCache;
     // QMap<int, QPixmap> m_tileCache;
 	QMap<QString, QPixmap> m_eventCache;
 	QMap<int, short> m_dictionary;

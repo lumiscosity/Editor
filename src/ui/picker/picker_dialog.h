@@ -21,6 +21,8 @@
 #include <QDir>
 #include <QMouseEvent>
 
+#include <ui/rpg_painter.h>
+
 #include "common/filefinder.h"
 
 class ProjectData;
@@ -63,4 +65,5 @@ private:
 	QFileInfo m_currentFile;
 	QFileSystemModel* m_model = nullptr;
 	FileFinder::FileType m_file_type;
+    RpgPainter m_painter;
 };
