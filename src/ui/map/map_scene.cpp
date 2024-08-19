@@ -26,6 +26,7 @@
 #include <qmainwindow.h>
 #include <lcf/rpg/event.h>
 #include "common/image_loader.h"
+#include "common/tileops.h"
 #include "core.h"
 #include "common/dbstring.h"
 #include "ui/event/event_dialog.h"
@@ -599,9 +600,9 @@ void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 			case Core::FILL:
 				m_drawing = true;
 				if (core().layer() == Core::LOWER)
-					drawFill(core().translate(m_lower[static_cast<size_t>(_index(fst_x,fst_y))]),fst_x,fst_y);
+                    drawFill(TileOps::translate(m_lower[static_cast<size_t>(_index(fst_x,fst_y))]),fst_x,fst_y);
 				else if (core().layer() == Core::UPPER)
-					drawFill(core().translate(m_upper[static_cast<size_t>(_index(fst_x,fst_y))]),fst_x,fst_y);
+                    drawFill(TileOps::translate(m_upper[static_cast<size_t>(_index(fst_x,fst_y))]),fst_x,fst_y);
 				updateArea(0, 0, m_map->width-1 ,m_map->height-1);
 				break;
 			default:
@@ -773,7 +774,7 @@ void MapScene::updateArea(int x1, int y1, int x2, int y2)
 		{
 			if (core().layer() == Core::LOWER)
 			{
-				if (!core().isEblock(core().translate(m_lower[static_cast<size_t>(_index(x, y))])))
+                if (!TileOps::isEblock(TileOps::translate(m_lower[static_cast<size_t>(_index(x, y))])))
 					m_lower[static_cast<size_t>(_index(x,y))] = bind(x, y);
 			}
 
@@ -877,12 +878,12 @@ void MapScene::drawFill(int terrain_id, int x, int y)
 	switch (core().layer())
 	{
 	case (Core::LOWER):
-		if (core().translate(m_lower[static_cast<size_t>(_index(x,y))]) != terrain_id)
+        if (TileOps::translate(m_lower[static_cast<size_t>(_index(x,y))]) != terrain_id)
 			return;
 		m_lower[static_cast<size_t>(_index(x,y))] = core().selection(x-fst_x,y-fst_y);
 		break;
 	case (Core::UPPER):
-		if (core().translate(m_upper[static_cast<size_t>(_index(x,y))]) != terrain_id)
+        if (TileOps::translate(m_upper[static_cast<size_t>(_index(x,y))]) != terrain_id)
 			return;
 		m_upper[static_cast<size_t>(_index(x,y))] = core().selection(x-fst_x,y-fst_y);
 		break;
@@ -897,18 +898,18 @@ void MapScene::drawFill(int terrain_id, int x, int y)
 
 short MapScene::bind(int x, int y)
 {
-#define tile_u core().translate(m_lower[static_cast<size_t>(_index(x, y-1))])
-#define tile_d core().translate(m_lower[static_cast<size_t>(_index(x, y+1))])
-#define tile_l core().translate(m_lower[static_cast<size_t>(_index(x-1, y))])
-#define tile_r core().translate(m_lower[static_cast<size_t>(_index(x+1, y))])
-#define tile_ul core().translate(m_lower[static_cast<size_t>(_index(x-1, y-1))])
-#define tile_ur core().translate(m_lower[static_cast<size_t>(_index(x+1, y-1))])
-#define tile_dl core().translate(m_lower[static_cast<size_t>(_index(x-1, y+1))])
-#define tile_dr core().translate(m_lower[static_cast<size_t>(_index(x+1, y+1))])
+#define tile_u TileOps::translate(m_lower[static_cast<size_t>(_index(x, y-1))])
+#define tile_d TileOps::translate(m_lower[static_cast<size_t>(_index(x, y+1))])
+#define tile_l TileOps::translate(m_lower[static_cast<size_t>(_index(x-1, y))])
+#define tile_r TileOps::translate(m_lower[static_cast<size_t>(_index(x+1, y))])
+#define tile_ul TileOps::translate(m_lower[static_cast<size_t>(_index(x-1, y-1))])
+#define tile_ur TileOps::translate(m_lower[static_cast<size_t>(_index(x+1, y-1))])
+#define tile_dl TileOps::translate(m_lower[static_cast<size_t>(_index(x-1, y+1))])
+#define tile_dr TileOps::translate(m_lower[static_cast<size_t>(_index(x+1, y+1))])
 	int _code = 0, _scode = 0;
-	int terrain_id = core().translate(m_lower[static_cast<size_t>(_index(x, y))]);
+    int terrain_id = TileOps::translate(m_lower[static_cast<size_t>(_index(x, y))]);
 	int u=0,d=0,l=0,r=0,ul=0,ur=0,dl=0,dr=0,sul=0,sur=0,sdl=0,sdr=0;
-	if (core().isDblock(terrain_id))
+    if (TileOps::isDblock(terrain_id))
 	{
 		if (y > 0 && terrain_id != tile_u)
 			u = UP;
@@ -929,58 +930,58 @@ short MapScene::bind(int x, int y)
 			dr = DOWNRIGHT;
 		_code = u+d+l+r+ul+ur+dl+dr;
 	}
-	else if (core().isWater(terrain_id) || core().isAnimation(terrain_id))
+    else if (TileOps::isWater(terrain_id) || TileOps::isAnimation(terrain_id))
 	{
-		if (y > 0 && (!core().isWater(tile_u) &&
-					  !core().isAnimation(tile_u)))
+        if (y > 0 && (!TileOps::isWater(tile_u) &&
+                      !TileOps::isAnimation(tile_u)))
 			u = UP;
-		if (y < m_map->height-1 && (!core().isWater(tile_d) &&
-										  !core().isAnimation(tile_d)))
+        if (y < m_map->height-1 && (!TileOps::isWater(tile_d) &&
+                                          !TileOps::isAnimation(tile_d)))
 			d = DOWN;
-		if (x > 0 && (!core().isWater(tile_l) &&
-					  !core().isAnimation(tile_l)))
+        if (x > 0 && (!TileOps::isWater(tile_l) &&
+                      !TileOps::isAnimation(tile_l)))
 			l = LEFT;
-		if (x < m_map->width-1 && (!core().isWater(tile_r) &&
-										 !core().isAnimation(tile_r)))
+        if (x < m_map->width-1 && (!TileOps::isWater(tile_r) &&
+                                         !TileOps::isAnimation(tile_r)))
 			r = RIGHT;
-		if ((u+l) == 0 && x > 0 && y > 0 && !core().isWater(tile_ul) && !core().isAnimation(tile_ul))
+        if ((u+l) == 0 && x > 0 && y > 0 && !TileOps::isWater(tile_ul) && !TileOps::isAnimation(tile_ul))
 			ul = UPLEFT;
-		if ((u+r) == 0 && x < m_map->width-1 && y > 0 && !core().isWater(tile_ur) && !core().isAnimation(tile_ur))
+        if ((u+r) == 0 && x < m_map->width-1 && y > 0 && !TileOps::isWater(tile_ur) && !TileOps::isAnimation(tile_ur))
 			ur = UPRIGHT;
-		if ((d+l) == 0 && x > 0 && y < m_map->height-1 && !core().isWater(tile_dl) && !core().isAnimation(tile_dl))
+        if ((d+l) == 0 && x > 0 && y < m_map->height-1 && !TileOps::isWater(tile_dl) && !TileOps::isAnimation(tile_dl))
 			dl = DOWNLEFT;
 		if ((d+r) == 0 && x < m_map->width-1 &&
-				y < m_map->height-1 && !core().isWater(tile_dr) && !core().isAnimation(tile_dr))
+                y < m_map->height-1 && !TileOps::isWater(tile_dr) && !TileOps::isAnimation(tile_dr))
 			dr = DOWNRIGHT;
 		_code = u+d+l+r+ul+ur+dl+dr;
 		// DeepWater Special Corners
-		if (core().isDWater(terrain_id))
+        if (TileOps::isDWater(terrain_id))
 		{
-			if (x > 0 && y > 0 && core().isABWater(tile_u) && core().isABWater (tile_l) && core().isABWater (tile_ul))
+            if (x > 0 && y > 0 && TileOps::isABWater(tile_u) && TileOps::isABWater (tile_l) && TileOps::isABWater (tile_ul))
 				sul = UPLEFT;
-			if (x < m_map->width-1 && y > 0 && core().isABWater(tile_u) && core().isABWater (tile_r) && core().isABWater (tile_ur))
+            if (x < m_map->width-1 && y > 0 && TileOps::isABWater(tile_u) && TileOps::isABWater (tile_r) && TileOps::isABWater (tile_ur))
 				sur = UPRIGHT;
-			if (x > 0 && y < m_map->height-1 && core().isABWater(tile_d) && core().isABWater (tile_l) && core().isABWater (tile_dl))
+            if (x > 0 && y < m_map->height-1 && TileOps::isABWater(tile_d) && TileOps::isABWater (tile_l) && TileOps::isABWater (tile_dl))
 				sdl = DOWNRIGHT;
 			if (x < m_map->width-1 && y < m_map->height-1 &&
-					core().isABWater(tile_d) && core().isABWater (tile_r) && core().isABWater (tile_dr))
+                    TileOps::isABWater(tile_d) && TileOps::isABWater (tile_r) && TileOps::isABWater (tile_dr))
 				sdr = DOWNLEFT;
 		}
 		else
 		{
-			if (x > 0 && y > 0 && core().isDWater (tile_u) && core().isDWater (tile_l) && core().isWater(tile_ul))
+            if (x > 0 && y > 0 && TileOps::isDWater (tile_u) && TileOps::isDWater (tile_l) && TileOps::isWater(tile_ul))
 				sul = UPLEFT;
-			if (x < m_map->width-1 && y > 0 && core().isDWater (tile_u) && core().isDWater (tile_r) && core().isWater(tile_ur))
+            if (x < m_map->width-1 && y > 0 && TileOps::isDWater (tile_u) && TileOps::isDWater (tile_r) && TileOps::isWater(tile_ur))
 				sur = UPRIGHT;
-			if (x > 0 && y < m_map->height-1 && core().isDWater (tile_d) && core().isDWater (tile_l) && core().isWater(tile_dl))
+            if (x > 0 && y < m_map->height-1 && TileOps::isDWater (tile_d) && TileOps::isDWater (tile_l) && TileOps::isWater(tile_dl))
 				sdl = DOWNRIGHT;
 			if (x < m_map->width-1 && y < m_map->height-1 &&
-					core().isDWater (tile_d) && core().isDWater (tile_r) && core().isWater(tile_dr))
+                    TileOps::isDWater (tile_d) && TileOps::isDWater (tile_r) && TileOps::isWater(tile_dr))
 				sdr = DOWNLEFT;
 		}
 		_scode = sul+sur+sdl+sdr;
 	}
-	return core().translate(terrain_id, _code, _scode);
+    return TileOps::translate(terrain_id, _code, _scode);
 #undef tile_u
 #undef tile_d
 #undef tile_l

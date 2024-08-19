@@ -16,6 +16,7 @@
  */
 
 #include "map_properties_dialog.h"
+#include "common/tileops.h"
 #include "ui_map_properties_dialog.h"
 #include "core.h"
 #include "common/dbstring.h"
@@ -90,7 +91,7 @@ MapPropertiesDialog::MapPropertiesDialog(ProjectData& project, lcf::rpg::MapInfo
 	m_buttonGroupSave->setId(ui->radioSaveForbid, lcf::rpg::MapInfo::TriState_forbid);
 
 	for (int terrain = 0; terrain < 162; terrain++)
-		m_generatorLowerLayer.push_back(core().translate(terrain, UP+DOWN+LEFT+RIGHT));
+        m_generatorLowerLayer.push_back(TileOps::translate(terrain, UP+DOWN+LEFT+RIGHT));
 	for (short tile_id = 10000; tile_id < 10144; tile_id++)
 		m_generatorUpperLayer.push_back(tile_id);
 

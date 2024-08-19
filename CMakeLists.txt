@@ -25,6 +25,8 @@ set(EDITOR_SOURCES
 	src/common/signal_blocker.h
 	src/common/sortfilter_proxy_models.cpp
 	src/common/sortfilter_proxy_models.h
+        src/common/tileops.cpp
+        src/common/tileops.h
 	src/core.cpp
 	src/core.h
 	src/defines.h

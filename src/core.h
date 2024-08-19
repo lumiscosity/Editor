@@ -59,7 +59,6 @@ public:
 
 	static Core* getCore();
 
-    QMap<short, QPixmap> loadChipset(QString chipset_name);
     QSize loadPanorama(QString name);
 
 	int tileSize();
@@ -76,18 +75,7 @@ public:
 	QString gameTitle();
 	void setGameTitle(const QString &gameTitle);
 
-	short translate(int terrain_id, int _code = 0, int _scode = 0);
-	int translate(short tile_id);
-
 	QPixmap createDummyPixmap(int width, int height);
-
-	bool isWater(int terrain_id);
-	bool isABWater(int terrain_id);
-	bool isDWater(int terrain_id);
-	bool isAnimation(int terrain_id);
-	bool isDblock(int terrain_id);
-	bool isEblock(int terrain_id);
-	bool isFblock(int terrain_id);
 
 	QString defDir() const;
 	void setDefDir(const QString &defDir);
@@ -121,12 +109,8 @@ private:
 	QString m_defDir;
     QString m_rtpDir;
 	Layer m_layer;
-	Tool m_tool;
-    QPixmap m_panorama;
+    Tool m_tool;
 	QMap<QString, QPixmap> m_eventCache;
-	QMap<int, short> m_dictionary;
-	QMap<int, lcf::rpg::Map> m_maps;
-	QMap<int, QWidget*> m_mapTabs;
 	std::vector<short> m_lowerSel;
 	std::vector<short> m_upperSel;
 	short m_eventSel;

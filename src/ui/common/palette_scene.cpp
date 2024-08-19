@@ -16,6 +16,7 @@
  */
 
 #include "palette_scene.h"
+#include "common/tileops.h"
 #include <QGraphicsDropShadowEffect>
 #include <QPainter>
 
@@ -156,9 +157,9 @@ void PaletteScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     for (int _y = y; _y < y+h; _y++)
         for (int _x = x; _x < x+w; _x++)
             if (core().layer() == Core::LOWER)
-                sel.push_back(core().translate(_x+_y*6, SAMPLE));
+                sel.push_back(TileOps::translate(_x+_y*6, SAMPLE));
             else
-                sel.push_back(core().translate(_x+_y*6+162, SAMPLE));
+                sel.push_back(TileOps::translate(_x+_y*6+162, SAMPLE));
     core().setSelection(sel, w, h);
     last_selection = m_selectionItem->boundingRect();
 	QGraphicsScene::mouseReleaseEvent(event);
