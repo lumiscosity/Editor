@@ -110,6 +110,12 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->setupUi(this);
 	refreshIcons();
 
+    core().setRtpDir(m_settings.value(RTP_KEY, QString()).toString());
+    if (core().rtpPath("").isEmpty())
+        on_actionDebugRtpPath_triggered();
+    core().setDefDir(m_settings.value(DEFAULT_DIR_KEY,
+                                      qApp->applicationDirPath()).toString());
+
 	// Hide map ids
 	ui->treeMap->hideColumn(1);
 	// Created hardcoded toolbar for palette window.
@@ -140,11 +146,6 @@ MainWindow::MainWindow(QWidget *parent) :
 			m_paletteScene,
 			SLOT(onChipsetChange()));
 	update_actions();
-	core().setRtpDir(m_settings.value(RTP_KEY, QString()).toString());
-	if (core().rtpPath("").isEmpty())
-		on_actionDebugRtpPath_triggered();
-	core().setDefDir(m_settings.value(DEFAULT_DIR_KEY,
-										qApp->applicationDirPath()).toString());
 	updateLayerActions();
 	updateToolActions();
 }
@@ -513,7 +514,7 @@ void MainWindow::update_actions()
 	ui->actionLayerLower->setEnabled(has_project);
 	ui->actionLayerUpper->setEnabled(has_project);
 	ui->actionProjectNew->setEnabled(!has_project);
-	ui->actionProjectOpen->setEnabled(!has_project);
+    ui->actionProjectOpen->setEnabled(has_project);
 	ui->actionPlayTest->setEnabled(has_project);
 	ui->actionMapSave->setEnabled(currentScene() && currentScene()->isModified());
 	ui->actionScriptEditor->setEnabled(has_project);
@@ -705,7 +706,8 @@ QGraphicsView *MainWindow::getView(int id)
 				SIGNAL(mapSaved()),
 				this,
 				SLOT(on_mapUnchanged()));
-		core().setCurrentMapEvents(getScene(id)->mapEvents());
+        // FIXME: shouldn't be required anymore, but stub out if it breaks
+        // getScene(id)->setCurrentMapEvents(getScene(id)->mapEvents());
 		getScene(id)->setScale(2.0);
 		getScene(id)->Init();
 	}
@@ -857,6 +859,9 @@ void MainWindow::on_treeMap_itemDoubleClicked(QTreeWidgetItem *item, int column)
 	ui->tabMap->setCurrentWidget(view);
 	if (ui->tabMap->count() == 1)
         m_paletteScene->onChipsetChange();
+    currentScene()->setTileset(currentScene()->chipsetId());
+    currentScene()->setCurrentMapEvents(currentScene()->mapEvents());
+    currentScene()->redrawMap();
 }
 
 void MainWindow::on_tabMap_tabCloseRequested(int index)
@@ -895,11 +900,10 @@ void MainWindow::on_tabMap_currentChanged(int index)
 	}
 	if (currentScene())
 	{
-        core().loadChipset(currentScene()->chipsetId());
-		core().setCurrentMapEvents(currentScene()->mapEvents());
 		ui->actionUndo->setEnabled(currentScene()->isModified());
 		ui->actionMapSave->setEnabled(currentScene()->isModified());
 		ui->actionMapRevert->setEnabled(currentScene()->isModified());
+        currentScene()->redrawMap();
 	}
 }
 

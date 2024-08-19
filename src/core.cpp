@@ -43,8 +43,7 @@ Core::Core()
 	m_upperSelW = 1;
 	m_lowerSelH = 1;
 	m_upperSelH = 1;
-	m_eventSel = 10000;
-	m_currentMapEvents = nullptr;
+    m_eventSel = 10000;
 	m_dictionary[UPLEFT]							= 1;
 	m_dictionary[UPRIGHT]							= 2;
 	m_dictionary[UPLEFT+UPRIGHT]					= 3;
@@ -104,25 +103,10 @@ Core *Core::getCore()
 	return core_instance;
 }
 
-void Core::loadChipset(int n_chipsetid)
-{
-	if (n_chipsetid == m_chipset.ID)
-		return;
-	for (auto & chipset : project()->database().chipsets)
-		if (chipset.ID == n_chipsetid)
-		{
-			m_chipset = chipset;
-			break;
-		}
 
-	const QString chipset_name = ToQString(m_chipset.chipset_name);
-    if (!m_chipsetCache.contains(chipset_name)) {
-        cacheChipset(chipset_name);
-    }
-}
-
-void Core::cacheChipset(QString chipset_name) {
-	QPixmap o_chipset = ImageLoader::Load(project()->findFile(CHIPSET, chipset_name, FileFinder::FileType::Image));
+/// Loads a chipset and returns it.
+QMap<short, QPixmap> Core::loadChipset(QString chipset_name) {
+    QPixmap o_chipset = ImageLoader::Load(project()->findFile(CHIPSET, chipset_name, FileFinder::FileType::Image), true);
 	if (!o_chipset)
 		o_chipset = ImageLoader::Load(rtpPath(CHIPSET, chipset_name));
 	if (!o_chipset)
@@ -130,20 +114,11 @@ void Core::cacheChipset(QString chipset_name) {
 		qWarning()<<"Chipset"<<chipset_name<<"not found.";
 		o_chipset = createDummyPixmap(480,256);
 	}
-	else // Skip color mask when using the dummy pixmap
-	{
-		if (o_chipset.toImage().colorCount() > 0)
-			m_keycolor = QColor(o_chipset.toImage().color(0));
-		else
-			// Qt might remove the color table. Use the color of the first upper tile instead
-			m_keycolor = QColor(o_chipset.toImage().pixel(288,128));
-		o_chipset.setMask(o_chipset.createMaskFromColor(m_keycolor));
-	}
 
 	int r_tileSize = o_chipset.width()/30;
 	int r_tileHalf = r_tileSize/2;
 
-    auto &cache_dest = m_chipsetCache[chipset_name];
+    QMap<short, QPixmap> map;
 
 	/* BindWaterTiles */
 
@@ -214,7 +189,7 @@ void Core::cacheChipset(QString chipset_name) {
 			dr = DOWNRIGHT;
 		_code += ul+ur+dl+dr;
 		short id = translate(terrain_id,_code,_scode);
-        if (!cache_dest[id].isNull()) //item exist?
+        if (!map[id].isNull()) //item exist?
 			continue;
 		// Water B uses second block of 3x4 tiles for borders
 		// Water A and Deep Water uses first block
@@ -299,7 +274,7 @@ void Core::cacheChipset(QString chipset_name) {
 				blit(0, r_tileSize*13/2);
 		}
 #undef blit
-        cache_dest[id] = p_tile;
+        map[id] = p_tile;
 	}
 
 	/* Register AnimationTiles */
@@ -308,15 +283,15 @@ void Core::cacheChipset(QString chipset_name) {
 	QPainter a(&a_tile);
 	a.drawPixmap(0,0,tileSize(),tileSize(),o_chipset.copy(3*r_tileSize,4*r_tileSize,r_tileSize,r_tileSize));
 	for (int i = 0; i < 50; i++) {
-        cache_dest[translate(3) + i] = a_tile;
+        map[translate(3) + i] = a_tile;
 	}
 	a.drawPixmap(0,0,tileSize(),tileSize(),o_chipset.copy(4*r_tileSize,4*r_tileSize,r_tileSize,r_tileSize));
 	for (int i = 0; i < 50; i++) {
-        cache_dest[translate(4) + i] = a_tile;
+        map[translate(4) + i] = a_tile;
 	}
 	a.drawPixmap(0,0,tileSize(),tileSize(),o_chipset.copy(5*r_tileSize,4*r_tileSize,r_tileSize,r_tileSize));
 	for (int i = 0; i < 50; i++) {
-        cache_dest[translate(5) + i] = a_tile;
+        map[translate(5) + i] = a_tile;
 	}
 
 	/* BindGroundTiles */
@@ -373,7 +348,7 @@ void Core::cacheChipset(QString chipset_name) {
 				dr = DOWNRIGHT;
 
 			short id = translate (terrain_id, u+d+l+r+ul+ur+dl+dr);
-            if (!cache_dest[id].isNull()) //item exist?
+            if (!map[id].isNull()) //item exist?
 				continue;
 
 			/*
@@ -522,7 +497,7 @@ void Core::cacheChipset(QString chipset_name) {
 			/*
 			 * Register tile
 			 */
-            cache_dest[id] = p_tile;
+            map[id] = p_tile;
 		}
 
 		terrain_id++;
@@ -553,8 +528,8 @@ void Core::cacheChipset(QString chipset_name) {
 			int orig_y = tile_row*r_tileSize;
 			ef.drawPixmap(0,0,tileSize(),tileSize(),o_chipset.copy(orig_x,orig_y,r_tileSize,r_tileSize));
 			ef.end();
-			ef_tile.setMask(a_tile.createMaskFromColor(m_keycolor));
-            cache_dest[translate(terrain_id)] = ef_tile;
+            //ef_tile.setMask(a_tile.createMaskFromColor(m_keycolor));
+            map[translate(terrain_id)] = ef_tile;
 			terrain_id++;
 		}
 
@@ -565,21 +540,8 @@ void Core::cacheChipset(QString chipset_name) {
 			tileset_col++;
 		}
     }
-}
 
-QSize Core::loadPanorama(QString name)
-{
-    QPixmap panorama = ImageLoader::Load(project()->findFile(PANORAMA, name, FileFinder::FileType::Image));
-    if (!panorama)
-        panorama = ImageLoader::Load(rtpPath(PANORAMA, name));
-    if (!panorama)
-    {
-        panorama = QPixmap(640, 320);
-        panorama.fill(Qt::black);
-    }
-
-    m_panorama = panorama;
-    return m_panorama.size();
+    return map;
 }
 
 int Core::tileSize()
@@ -805,19 +767,6 @@ void Core::setSelection(std::vector<short> n_sel, int n_w, int n_h)
 	}
 }
 
-lcf::rpg::Event *Core::currentMapEvent(int eventID)
-{
-	lcf::rpg::Event *event = nullptr;
-	if (m_currentMapEvents)
-		event = m_currentMapEvents->value(eventID);
-	if (!event)
-	{
-		event = new lcf::rpg::Event();
-		event->name = "<?>";
-	}
-	return event;
-}
-
 void Core::cacheEvent(const lcf::rpg::Event* ev, QString key) {
 	
 	if (ev->pages.empty())
@@ -845,11 +794,6 @@ void Core::cacheEvent(const lcf::rpg::Event* ev, QString key) {
 	m_eventCache[key] = charset.copy(src_x, src_y, 24, 32);
 }
 
-void Core::setCurrentMapEvents(QMap<int, lcf::rpg::Event *> *events)
-{
-	m_currentMapEvents = events;
-}
-
 QPixmap Core::createDummyPixmap(int width, int height)
 {
 	QPixmap dummy(QPixmap(480,256));
@@ -857,14 +801,6 @@ QPixmap Core::createDummyPixmap(int width, int height)
 	p.drawTiledPixmap(0, 0, width, height, QPixmap(":/embedded/share/old_grid.png"));
 	p.end();
 	return dummy;
-}
-
-QMap<short, QPixmap> &Core::getCachedChipset(QString chipset) {
-    return m_chipsetCache[chipset];
-}
-
-QString Core::getChipset() {
-    return ToQString(m_chipset.name);
 }
 
 QMap<QString, QPixmap> &Core::getEventCache() {

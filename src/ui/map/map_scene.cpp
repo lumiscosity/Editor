@@ -108,7 +108,7 @@ MapScene::MapScene(ProjectData& project, int id, QGraphicsView *view, QObject *p
 	m_lowerpix->setGraphicsEffect(effect);
 	m_upperpix->setGraphicsEffect(new QGraphicsOpacityEffect(this));
 	onLayerChanged();
-	onToolChanged();
+    onToolChanged();
 }
 
 MapScene::~MapScene()
@@ -118,6 +118,7 @@ MapScene::~MapScene()
 	delete m_lines;
 	delete m_selectionTile;
 	delete m_undoStack;
+    delete m_currentMapEvents;
 }
 
 void MapScene::Init()
@@ -164,8 +165,7 @@ void MapScene::Init()
 			SLOT(onLayerChanged()));
 	m_view->verticalScrollBar()->setValue(n_mapInfo.scrollbar_y *static_cast<int>(m_scale));
 	m_view->horizontalScrollBar()->setValue(n_mapInfo.scrollbar_x * static_cast<int>(m_scale));
-	m_init = true;
-	core().setCurrentMapEvents(mapEvents());
+    m_init = true;
 	redrawMap();
 }
 
@@ -192,6 +192,11 @@ int MapScene::id() const
 int MapScene::chipsetId() const
 {
 	return m_map->chipset_id;
+}
+
+lcf::rpg::Map*MapScene::map() const
+{
+    return m_map.get();
 }
 
 void MapScene::setLayerData(Core::Layer layer, std::vector<short> data)
@@ -263,7 +268,6 @@ void MapScene::redrawMap()
 {
 	if (!m_init)
 		return;
-    core().loadChipset(m_map->chipset_id);
 	s_tileSize = core().tileSize() * static_cast<double>(m_scale);
     redrawPanorama();
 	redrawLayer(Core::LOWER);
@@ -1039,9 +1043,9 @@ void MapScene::redrawPanorama() {
     QString panorama_name;
 	if (m_map->parallax_flag) {
         panorama_name = m_map->parallax_name.c_str();
-        panorama_size = core().loadPanorama(panorama_name);
+        panorama_size = m_painter.setPanorama(panorama_name);
 	} else {
-        panorama_size = core().loadPanorama(panorama_name);
+        panorama_size = m_painter.setPanorama(panorama_name);
 	}
     QSize size = getViewportContentSize();
     int panorama_width = (int)(((float)s_tileSize / 16) * panorama_size.width());
@@ -1062,7 +1066,7 @@ void MapScene::redrawPanorama() {
                             ((y-start_y)* panorama_height) - h_offset,
                             panorama_width,
                             panorama_height);
-            m_painter.renderPanorama(dest_rect, panorama_name);
+            m_painter.renderPanorama(dest_rect);
         }
     m_painter.endPainting();
     m_panorama->setPixmap(pix);
@@ -1108,4 +1112,26 @@ QSize MapScene::getViewportContentSize() {
     else
         size.setHeight(size.height()+s_tileSize);
     return size;
+}
+
+lcf::rpg::Event *MapScene::currentMapEvent(int eventID)
+{
+    lcf::rpg::Event *event = nullptr;
+    if (m_currentMapEvents)
+        event = m_currentMapEvents->value(eventID);
+    if (!event)
+    {
+        event = new lcf::rpg::Event();
+        event->name = "<?>";
+    }
+    return event;
+}
+
+void MapScene::setCurrentMapEvents(QMap<int, lcf::rpg::Event *> *events)
+{
+    m_currentMapEvents = events;
+}
+
+void MapScene::setTileset(int index) {
+    m_painter.setChipset(ToQString(core().project()->database().chipsets[index-1].chipset_name));
 }

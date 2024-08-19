@@ -6,7 +6,7 @@
 class RpgPainter : public QPainter {
 
 public:
-    RpgPainter();
+    RpgPainter(QString chipset = QString());
 
     enum TileOverviewMode
     {
@@ -15,18 +15,22 @@ public:
         ALL_UPPER
     };
 
-    void setCachedChipset(QString chipset);
+    void setChipset(QString chipset);
+    QSize setPanorama(QString name);
+
     void beginPainting(QPixmap &dest);
-    void renderPanorama(const QRect &dest_rect, QPixmap panorama);
+    void renderPanorama(const QRect &dest_rect);
     void renderTile(const short &tile_id, const QRect &dest_rect);
     void renderTileOverview(const TileOverviewMode mode);
     void renderEvent(const lcf::rpg::Event& event, const QRect &dest_rect);
     void endPainting();
     QColor keycolor();
+
+    inline bool chipsetIsNull(QString chipset) {return m_chipset[0].isNull();}
+
 private:
-    QColor m_keycolor;
-    QString m_chipset;
-    QMap<short, QPixmap> *m_chipsetCache = nullptr;
+    QPixmap m_panorama;
+    QMap<short, QPixmap> m_chipset;
     QMap<QString, QPixmap> *m_eventCache = nullptr;
 
 };

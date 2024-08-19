@@ -18,9 +18,10 @@
 #include "image_loader.h"
 #include <cstring>
 #include <QFile>
+#include <qbitmap.h>
 #include <zlib.h>
 
-QPixmap ImageLoader::Load(const QString& path) {
+QPixmap ImageLoader::Load(const QString& path, bool mask) {
 	QFile file(path);
 
 	if (!file.open(QFile::ReadOnly)) {
@@ -36,7 +37,18 @@ QPixmap ImageLoader::Load(const QString& path) {
 		constexpr char png_header[4] = { '\x89', 'P', 'N', 'G' };
 		// Not a XYZ file, check if BMP and PNG as these are the formats supported by Player
 		if (!memcmp(header, "BM", 2) || !memcmp(header, png_header, 4)) {
-			return QPixmap(path);
+            QPixmap output(path);
+            if (mask) {
+                QImage source(path);
+                QColor color = QColor();
+                if (source.colorCount() > 0)
+                    color = QColor(source.color(0));
+                else
+                    // Qt might remove the color table. Use the color of the first upper tile instead
+                    color = QColor(source.pixel(288,128));
+                output.setMask(output.createMaskFromColor(color));
+            }
+            return output;
 		}
 		return QPixmap();
 	}

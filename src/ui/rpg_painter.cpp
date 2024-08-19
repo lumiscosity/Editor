@@ -1,11 +1,11 @@
 #include "rpg_painter.h"
 #include "common/dbstring.h"
+#include "common/image_loader.h"
 
 
 
-RpgPainter::RpgPainter() {
-    // FIXME: split the current chipset info from core maybe?
-    setCachedChipset(core().getChipset().isNull() ? QString() : core().getChipset());
+RpgPainter::RpgPainter(QString chipset) {
+    setChipset(chipset);
     m_eventCache = &core().getEventCache();
 }
 
@@ -16,12 +16,26 @@ enum TileOverviewMode
     ALL_UPPER
 };
 
-void RpgPainter::setCachedChipset(QString chipset) {
-    if (!core().getChipset().isEmpty()){
-        core().cacheChipset(core().getChipset());
+void RpgPainter::setChipset(QString name) {
+    if (name.isEmpty()) {
+        return;
     }
-    m_chipset = chipset;
-    m_chipsetCache = &core().getCachedChipset(chipset);
+    m_chipset = core().loadChipset(name);
+}
+
+QSize RpgPainter::setPanorama(QString name)
+{
+    QPixmap panorama = ImageLoader::Load(core().project()->findFile(PANORAMA, name, FileFinder::FileType::Image));
+    if (!panorama)
+        panorama = ImageLoader::Load(core().rtpPath(PANORAMA, name));
+    if (!panorama)
+    {
+        panorama = QPixmap(640, 320);
+        panorama.fill(Qt::black);
+    }
+
+    m_panorama = panorama;
+    return m_panorama.size();
 }
 
 void RpgPainter::beginPainting(QPixmap &dest) {
@@ -29,12 +43,12 @@ void RpgPainter::beginPainting(QPixmap &dest) {
     this->setPen(Qt::yellow);
 }
 
-void RpgPainter::renderPanorama(const QRect &dest_rect, QPixmap panorama) {
-    this->drawPixmap(dest_rect, panorama);
+void RpgPainter::renderPanorama(const QRect &dest_rect) {
+    this->drawPixmap(dest_rect, m_panorama);
 }
 
 void RpgPainter::renderTile(const short &tile_id, const QRect &dest_rect) {
-    this->drawPixmap(dest_rect, m_chipsetCache->value(tile_id));
+    this->drawPixmap(dest_rect, m_chipset[tile_id]);
 }
 
 void RpgPainter::renderTileOverview(const TileOverviewMode mode) {
@@ -90,9 +104,4 @@ void RpgPainter::renderEvent(const lcf::rpg::Event& event, const QRect &dest_rec
 void RpgPainter::endPainting()
 {
     this->end();
-}
-
-QColor RpgPainter::keycolor()
-{
-    return m_keycolor;
 }

@@ -59,8 +59,7 @@ public:
 
 	static Core* getCore();
 
-    void loadChipset(int n_chipsetid);
-    void cacheChipset(QString name);
+    QMap<short, QPixmap> loadChipset(QString chipset_name);
     QSize loadPanorama(QString name);
 
 	int tileSize();
@@ -77,12 +76,9 @@ public:
 	QString gameTitle();
 	void setGameTitle(const QString &gameTitle);
 
-	QColor keycolor();
-
 	short translate(int terrain_id, int _code = 0, int _scode = 0);
 	int translate(short tile_id);
 
-    inline bool chipsetIsNull(QString chipset) {return m_chipsetCache[chipset][0].isNull();}
 	QPixmap createDummyPixmap(int width, int height);
 
 	bool isWater(int terrain_id);
@@ -103,8 +99,6 @@ public:
 	int selHeight();
 	void setSelection(std::vector<short> n_sel, int n_w, int n_h);
 
-	lcf::rpg::Event *currentMapEvent(int eventID);
-	void setCurrentMapEvents(QMap<int, lcf::rpg::Event *> *events);
 	void cacheEvent(const lcf::rpg::Event* ev, QString key);
 
 	void runGame();
@@ -112,10 +106,9 @@ public:
 	void runBattleTest(int troop_id);
 
 	std::shared_ptr<Project>& project();
-	const std::shared_ptr<Project>& project() const;
-    QMap<short, QPixmap> &getCachedChipset(QString chipset);
-    QString getChipset();
+    const std::shared_ptr<Project>& project() const;
     QMap<QString, QPixmap> &getEventCache();
+
 signals:
 	void toolChanged();
 
@@ -124,18 +117,12 @@ signals:
 	void chipsetChanged();
 
 private:
-	lcf::rpg::Map *m_map;
-	lcf::rpg::Chipset m_chipset;
 	int m_tileSize;
-	QPainter m_painter;
 	QString m_defDir;
-	QString m_rtpDir;
-	QColor m_keycolor;
+    QString m_rtpDir;
 	Layer m_layer;
 	Tool m_tool;
     QPixmap m_panorama;
-    QMap<QString, QMap<short, QPixmap>> m_chipsetCache;
-    // QMap<int, QPixmap> m_tileCache;
 	QMap<QString, QPixmap> m_eventCache;
 	QMap<int, short> m_dictionary;
 	QMap<int, lcf::rpg::Map> m_maps;
@@ -147,8 +134,7 @@ private:
 	int m_lowerSelH;
 	int m_upperSelW;
 	int m_upperSelH;
-	static Core *core_instance;
-	QMap<int, lcf::rpg::Event*> *m_currentMapEvents;
+    static Core *core_instance;
 	RunGameDialog *m_runGameDialog;
 	std::shared_ptr<Project> m_project;
 };

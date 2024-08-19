@@ -1284,12 +1284,16 @@ namespace Stringizer
 		return ToQString(core().project()->database().states[static_cast<size_t>(id)-1].name);
 	}
 
-	QString eventName(int id)
-	{
-		if (!core().currentMapEvent(id))
-			return QString("<%1?>").arg(id);
-		return ToQString(core().currentMapEvent(id)->name);
-	}
+    //QString eventName(int id)
+    //{
+    //	if (!core().currentMapEvent(id))
+    //		return QString("<%1?>").arg(id);
+    //	return ToQString(core().currentMapEvent(id)->name);
+    //}
+
+    QString eventName(int id) {
+        return QString();
+    }
 
 	QString commonEventName(int id)
 	{

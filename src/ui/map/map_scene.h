@@ -49,11 +49,17 @@ public:
 	QString mapName() const;
 	bool isModified() const;
 	int id() const;
-	int chipsetId() const;
+    int chipsetId() const;
+    lcf::rpg::Map*map() const;
 	void setLayerData(Core::Layer layer, std::vector<short> data);
 	void setEventData(int id, const lcf::rpg::Event &data);
 	QMap<int, lcf::rpg::Event *> *mapEvents();
 	void editMapProperties(QTreeWidgetItem *item);
+
+    lcf::rpg::Event *currentMapEvent(int eventID);
+    void loadEvents();
+    void setCurrentMapEvents(QMap<int, lcf::rpg::Event *> *events);
+    void setTileset(int index);
 
 signals:
 
@@ -158,5 +164,6 @@ private:
 	bool event_clipboard_set = false;
 	QList<QGraphicsItem*> grid_lines;
     RpgPainter m_painter;
+    QMap<int, lcf::rpg::Event*> *m_currentMapEvents;
 };
 
