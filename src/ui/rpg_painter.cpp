@@ -1,8 +1,5 @@
 #include "rpg_painter.h"
 #include "common/dbstring.h"
-#include "common/image_loader.h"
-
-
 
 RpgPainter::RpgPainter(QString chipset) {
     setChipset(chipset);
@@ -16,6 +13,10 @@ enum TileOverviewMode
     ALL_UPPER
 };
 
+void RpgPainter::forceChipset(QMap<short, QPixmap> chipset) {
+    m_chipset = chipset;
+}
+
 void RpgPainter::setChipset(QString name) {
     if (name.isEmpty()) {
         return;
@@ -23,28 +24,9 @@ void RpgPainter::setChipset(QString name) {
     m_chipset = core().loadChipset(name);
 }
 
-QSize RpgPainter::setPanorama(QString name)
-{
-    QPixmap panorama = ImageLoader::Load(core().project()->findFile(PANORAMA, name, FileFinder::FileType::Image));
-    if (!panorama)
-        panorama = ImageLoader::Load(core().rtpPath(PANORAMA, name));
-    if (!panorama)
-    {
-        panorama = QPixmap(640, 320);
-        panorama.fill(Qt::black);
-    }
-
-    m_panorama = panorama;
-    return m_panorama.size();
-}
-
 void RpgPainter::beginPainting(QPixmap &dest) {
     this->begin(&dest);
     this->setPen(Qt::yellow);
-}
-
-void RpgPainter::renderPanorama(const QRect &dest_rect) {
-    this->drawPixmap(dest_rect, m_panorama);
 }
 
 void RpgPainter::renderTile(const short &tile_id, const QRect &dest_rect) {

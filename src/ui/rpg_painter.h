@@ -16,7 +16,6 @@ public:
     };
 
     void setChipset(QString chipset);
-    QSize setPanorama(QString name);
 
     void beginPainting(QPixmap &dest);
     void renderPanorama(const QRect &dest_rect);
@@ -24,12 +23,13 @@ public:
     void renderTileOverview(const TileOverviewMode mode);
     void renderEvent(const lcf::rpg::Event& event, const QRect &dest_rect);
     void endPainting();
-    QColor keycolor();
 
     inline bool chipsetIsNull(QString chipset) {return m_chipset[0].isNull();}
 
+    inline QMap<short, QPixmap> &sharePainterTiles() { return m_chipset; };
+    void forceChipset(QMap<short, QPixmap> chipset);
+
 private:
-    QPixmap m_panorama;
     QMap<short, QPixmap> m_chipset;
     QMap<QString, QPixmap> *m_eventCache = nullptr;
 

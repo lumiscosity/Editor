@@ -30,6 +30,7 @@
 #include <lcf/rpg/map.h>
 #include <lcf/rpg/mapinfo.h>
 #include <ui/rpg_painter.h>
+#include "common/dbstring.h"
 #include "core.h"
 
 class ProjectData;
@@ -60,6 +61,8 @@ public:
     void loadEvents();
     void setCurrentMapEvents(QMap<int, lcf::rpg::Event *> *events);
     void setTileset(int index);
+    QSize setPanorama(QString name);
+    inline QMap<short, QPixmap> &sharePainterTiles() { return m_painter.sharePainterTiles(); };
 
 signals:
 
@@ -164,6 +167,7 @@ private:
 	bool event_clipboard_set = false;
 	QList<QGraphicsItem*> grid_lines;
     RpgPainter m_painter;
+    QPixmap m_panoramaPixmap;
     QMap<int, lcf::rpg::Event*> *m_currentMapEvents;
 };
 

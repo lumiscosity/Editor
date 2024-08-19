@@ -857,11 +857,10 @@ void MainWindow::on_treeMap_itemDoubleClicked(QTreeWidgetItem *item, int column)
 		return;
 	QGraphicsView *view = getView(item->data(1,Qt::DisplayRole).toInt());
 	ui->tabMap->setCurrentWidget(view);
-	if (ui->tabMap->count() == 1)
-        m_paletteScene->onChipsetChange();
     currentScene()->setTileset(currentScene()->chipsetId());
     currentScene()->setCurrentMapEvents(currentScene()->mapEvents());
     currentScene()->redrawMap();
+    m_paletteScene->onChipsetChange(currentScene()->sharePainterTiles());
 }
 
 void MainWindow::on_tabMap_tabCloseRequested(int index)
@@ -904,6 +903,8 @@ void MainWindow::on_tabMap_currentChanged(int index)
 		ui->actionMapSave->setEnabled(currentScene()->isModified());
 		ui->actionMapRevert->setEnabled(currentScene()->isModified());
         currentScene()->redrawMap();
+        m_paletteScene->onChipsetChange(currentScene()->sharePainterTiles());
+
 	}
 }
 

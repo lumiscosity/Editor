@@ -36,7 +36,7 @@ signals:
 
 public slots:
 	void onLayerChange();
-	void onChipsetChange();
+    void onChipsetChange(QMap<short, QPixmap>);
 protected:
 
 	void updateSelectionRect();

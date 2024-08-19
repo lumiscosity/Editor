@@ -25,6 +25,7 @@
 #include <QStatusBar>
 #include <qmainwindow.h>
 #include <lcf/rpg/event.h>
+#include "common/image_loader.h"
 #include "core.h"
 #include "common/dbstring.h"
 #include "ui/event/event_dialog.h"
@@ -1043,9 +1044,9 @@ void MapScene::redrawPanorama() {
     QString panorama_name;
 	if (m_map->parallax_flag) {
         panorama_name = m_map->parallax_name.c_str();
-        panorama_size = m_painter.setPanorama(panorama_name);
+        panorama_size = setPanorama(panorama_name);
 	} else {
-        panorama_size = m_painter.setPanorama(panorama_name);
+        panorama_size = setPanorama(panorama_name);
 	}
     QSize size = getViewportContentSize();
     int panorama_width = (int)(((float)s_tileSize / 16) * panorama_size.width());
@@ -1066,7 +1067,7 @@ void MapScene::redrawPanorama() {
                             ((y-start_y)* panorama_height) - h_offset,
                             panorama_width,
                             panorama_height);
-            m_painter.renderPanorama(dest_rect);
+            m_painter.drawPixmap(dest_rect, m_panoramaPixmap);
         }
     m_painter.endPainting();
     m_panorama->setPixmap(pix);
@@ -1134,4 +1135,19 @@ void MapScene::setCurrentMapEvents(QMap<int, lcf::rpg::Event *> *events)
 
 void MapScene::setTileset(int index) {
     m_painter.setChipset(ToQString(core().project()->database().chipsets[index-1].chipset_name));
+}
+
+QSize MapScene::setPanorama(QString name)
+{
+    QPixmap panorama = ImageLoader::Load(core().project()->findFile(PANORAMA, name, FileFinder::FileType::Image));
+    if (!panorama)
+        panorama = ImageLoader::Load(core().rtpPath(PANORAMA, name));
+    if (!panorama)
+    {
+        panorama = QPixmap(640, 320);
+        panorama.fill(Qt::black);
+    }
+
+    m_panoramaPixmap = panorama;
+    return m_panoramaPixmap.size();
 }

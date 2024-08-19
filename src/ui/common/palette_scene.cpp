@@ -57,7 +57,7 @@ void PaletteScene::onLayerChange()
 	m_tiles->graphicsEffect()->setEnabled(core().layer() != Core::LOWER);
 }
 
-void PaletteScene::onChipsetChange()
+void PaletteScene::onChipsetChange(QMap<short, QPixmap> chipset)
 {
     if (false)
 	{
@@ -71,6 +71,7 @@ void PaletteScene::onChipsetChange()
     m_upperTiles = QPixmap(96, 400);
     m_lowerTiles.fill(Qt::transparent);
     m_upperTiles.fill(Qt::transparent);
+    m_painter.forceChipset(chipset);
     m_painter.beginPainting(m_lowerTiles);
     m_painter.renderTileOverview(RpgPainter::ALL_LOWER);
     m_painter.endPainting();
