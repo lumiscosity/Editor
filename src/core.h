@@ -17,13 +17,13 @@
 
 #pragma once
 
-#include "defines.h"
-
 #ifdef Q_OS_WIN
 #define PLAYER "Player.exe"
 #else
 #define PLAYER "easyrpg-player"
 #endif
+
+#include "defines.h"
 
 #include <QPixmap>
 #include <QPainter>
@@ -70,7 +70,7 @@ public:
 	void setLayer(const Layer &layer);
 
 	Tool tool();
-	void setTool(const Tool &tool);
+    void setTool(const Tool &tool);
 
 	QString gameTitle();
 	void setGameTitle(const QString &gameTitle);
@@ -120,7 +120,7 @@ private:
 	int m_upperSelH;
     static Core *core_instance;
 	RunGameDialog *m_runGameDialog;
-	std::shared_ptr<Project> m_project;
+    std::shared_ptr<Project> m_project;
 };
 
 Core& core();

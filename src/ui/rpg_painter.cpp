@@ -110,10 +110,11 @@ void RpgPainter::endPainting()
 void RpgPainter::loadChipset(QString chipset_name) {
     QPixmap o_chipset = ImageLoader::Load(core().project()->findFile(CHIPSET, chipset_name, FileFinder::FileType::Image), true);
     if (!o_chipset)
-        o_chipset = ImageLoader::Load(core().rtpPath(CHIPSET, chipset_name));
+        o_chipset = ImageLoader::Load(core().rtpPath(CHIPSET, chipset_name), true);
     if (!o_chipset)
     {
         qWarning()<<"Chipset"<<chipset_name<<"not found.";
+        //transparent = Qt::black;
         o_chipset = core().createDummyPixmap(480,256);
     }
 
@@ -529,7 +530,6 @@ void RpgPainter::loadChipset(QString chipset_name) {
             int orig_y = tile_row*r_tileSize;
             ef.drawPixmap(0,0,tilesize,tilesize,o_chipset.copy(orig_x,orig_y,r_tileSize,r_tileSize));
             ef.end();
-            //ef_tile.setMask(a_tile.createMaskFromColor(m_keycolor));
            m_chipset[TileOps::translate(terrain_id)] = ef_tile;
             terrain_id++;
         }

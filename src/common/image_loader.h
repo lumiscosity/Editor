@@ -21,5 +21,6 @@
 #include <QString>
 
 namespace ImageLoader {
+    QColor getTransparent(const QString& path);
     QPixmap Load(const QString& path, bool mask = false);
 }

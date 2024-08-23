@@ -1042,13 +1042,17 @@ int MapScene::getFirstFreeId() {
 
 void MapScene::redrawPanorama() {
     QSize panorama_size;
-    QString panorama_name;
-	if (m_map->parallax_flag) {
-        panorama_name = m_map->parallax_name.c_str();
-        panorama_size = setPanorama(panorama_name);
-	} else {
-        panorama_size = setPanorama(panorama_name);
-	}
+    if (!m_panoramaPixmap){
+        QString panorama_name;
+        if (m_map->parallax_flag) {
+            panorama_name = m_map->parallax_name.c_str();
+            panorama_size = setPanorama(panorama_name);
+        } else {
+            panorama_size = setPanorama(panorama_name);
+        }
+    } else {
+        panorama_size = m_panoramaPixmap.size();
+    }
     QSize size = getViewportContentSize();
     int panorama_width = (int)(((float)s_tileSize / 16) * panorama_size.width());
     int panorama_height = (int)(((float)s_tileSize / 16) * panorama_size.height());

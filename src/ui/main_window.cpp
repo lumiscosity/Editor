@@ -36,8 +36,6 @@
 #include <QStringList>
 #include <QDir>
 #include <cassert>
-#include <sstream>
-#include <iomanip>
 #include "core.h"
 #include <lcf/lmu/reader.h>
 #include <lcf/lmt/reader.h>
@@ -250,6 +248,24 @@ void MainWindow::LoadProject(QString foldername)
 		ui->tabMap->setCurrentWidget(view);
 	}*/
 	update_actions();
+}
+
+void MainWindow::closeProject() {
+    m_settings.setValue(CURRENT_PROJECT_KEY, QString());
+    int result = saveAll();
+
+    if (result == true) {
+        ui->treeMap->clear();
+        while (ui->tabMap->currentIndex() != -1)
+            removeView(currentScene()->id());
+
+        core().project().reset();
+
+        m_copiedMap.clear();
+
+        update_actions();
+        setWindowTitle(tr("EasyRPG Editor"));
+    }
 }
 
 void MainWindow::ImportProject(const QDir& src_dir, QDir& target_dir, bool convert_xyz)
@@ -514,7 +530,6 @@ void MainWindow::update_actions()
 	ui->actionLayerLower->setEnabled(has_project);
 	ui->actionLayerUpper->setEnabled(has_project);
 	ui->actionProjectNew->setEnabled(!has_project);
-    ui->actionProjectOpen->setEnabled(has_project);
 	ui->actionPlayTest->setEnabled(has_project);
 	ui->actionMapSave->setEnabled(currentScene() && currentScene()->isModified());
 	ui->actionScriptEditor->setEnabled(has_project);
@@ -772,21 +787,7 @@ void MainWindow::updateToolActions()
 
 void MainWindow::on_actionProjectClose_triggered()
 {
-	m_settings.setValue(CURRENT_PROJECT_KEY, QString());
-	int result = saveAll();
-
-	if (result == true) {
-		ui->treeMap->clear();
-		while (ui->tabMap->currentIndex() != -1)
-			removeView(currentScene()->id());
-
-		core().project().reset();
-
-		m_copiedMap.clear();
-
-		update_actions();
-		setWindowTitle(tr("EasyRPG Editor"));
-	}
+    closeProject();
 }
 
 void MainWindow::on_actionProjectOpen_triggered()
@@ -794,6 +795,7 @@ void MainWindow::on_actionProjectOpen_triggered()
 	OpenProjectDialog dlg(this);
 	dlg.setDefaultDir(core().defDir());
 	if (dlg.exec() == QDialog::Accepted)
+        closeProject();
 		LoadProject(dlg.getProject()->projectDir().absolutePath());
 	core().setDefDir(dlg.getDefaultDir());
 	m_settings.setValue(DEFAULT_DIR_KEY,dlg.getDefaultDir());

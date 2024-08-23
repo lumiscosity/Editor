@@ -24,6 +24,7 @@
 #include <QDebug>
 #include "common/dbstring.h"
 #include "common/image_loader.h"
+#include "defines.h"
 
 //define static member
 Core *Core::core_instance = nullptr;

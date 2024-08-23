@@ -21,6 +21,16 @@
 #include <qbitmap.h>
 #include <zlib.h>
 
+QColor ImageLoader::getTransparent(const QString& path) {
+    QImage source(path);
+    QColor color = QColor();
+    if (source.colorCount() > 0)
+        return QColor(source.color(0));
+    else
+        // Qt might remove the color table. Use the color of the first upper tile instead
+        return source.pixelColor(288,128);
+}
+
 QPixmap ImageLoader::Load(const QString& path, bool mask) {
 	QFile file(path);
 
@@ -39,14 +49,7 @@ QPixmap ImageLoader::Load(const QString& path, bool mask) {
 		if (!memcmp(header, "BM", 2) || !memcmp(header, png_header, 4)) {
             QPixmap output(path);
             if (mask) {
-                QImage source(path);
-                QColor color = QColor();
-                if (source.colorCount() > 0)
-                    color = QColor(source.color(0));
-                else
-                    // Qt might remove the color table. Use the color of the first upper tile instead
-                    color = QColor(source.pixel(288,128));
-                output.setMask(output.createMaskFromColor(color));
+                output.setMask(output.createMaskFromColor(getTransparent(path)));
             }
             return output;
 		}

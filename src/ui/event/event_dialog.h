@@ -32,7 +32,7 @@ class EventDialog : public QDialog
 	Q_OBJECT
 
 public:
-	explicit EventDialog(ProjectData& project, QWidget *parent = nullptr);
+    explicit EventDialog(ProjectData& project, QWidget *parent = nullptr);
 	~EventDialog();
 
 	static int edit(QWidget *parent, lcf::rpg::Event& event, ProjectData& project);
