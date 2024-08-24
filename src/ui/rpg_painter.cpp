@@ -114,7 +114,6 @@ void RpgPainter::loadChipset(QString chipset_name) {
     if (!o_chipset)
     {
         qWarning()<<"Chipset"<<chipset_name<<"not found.";
-        //transparent = Qt::black;
         o_chipset = core().createDummyPixmap(480,256);
     }
 
@@ -158,26 +157,26 @@ void RpgPainter::loadChipset(QString chipset_name) {
                                             r = RIGHT;
                                         _code = u+d+l+r;
                                         // DeepWater Special Corners
-                                        if (TileOps::isWater(terrain_id))
+                                        if (TileOps::isDWater(terrain_id))
                                         {
-                                            if (TileOps::isWater(tile_u) && TileOps::isWater (tile_l) && TileOps::isWater (tile_ul))
+                                            if (TileOps::isABWater(tile_u) && TileOps::isABWater (tile_l) && TileOps::isWater (tile_ul))
                                                 sul = UPLEFT;
-                                            if (TileOps::isWater(tile_u) && TileOps::isWater (tile_r) && TileOps::isWater (tile_ur))
+                                            if (TileOps::isABWater(tile_u) && TileOps::isABWater (tile_r) && TileOps::isWater (tile_ur))
                                                 sur = UPRIGHT;
-                                            if (TileOps::isWater(tile_d) && TileOps::isWater (tile_l) && TileOps::isWater (tile_dl))
+                                            if (TileOps::isABWater(tile_d) && TileOps::isABWater (tile_l) && TileOps::isWater (tile_dl))
                                                 sdl = DOWNRIGHT;
-                                            if (TileOps::isWater(tile_d) && TileOps::isWater (tile_r) && TileOps::isWater (tile_dr))
+                                            if (TileOps::isABWater(tile_d) && TileOps::isABWater (tile_r) && TileOps::isWater (tile_dr))
                                                 sdr = DOWNLEFT;
                                         }
                                         else
                                         {
-                                            if (TileOps::isWater (tile_u) && TileOps::isWater (tile_l) && TileOps::isWater(tile_ul))
+                                            if (TileOps::isDWater (tile_u) && TileOps::isDWater (tile_l) && TileOps::isWater(tile_ul))
                                                 sul = UPLEFT;
-                                            if (TileOps::isWater (tile_u) && TileOps::isWater (tile_r) && TileOps::isWater(tile_ur))
+                                            if (TileOps::isDWater (tile_u) && TileOps::isDWater (tile_r) && TileOps::isWater(tile_ur))
                                                 sur = UPRIGHT;
-                                            if (TileOps::isWater (tile_d) && TileOps::isWater (tile_l) && TileOps::isWater(tile_dl))
+                                            if (TileOps::isDWater (tile_d) && TileOps::isDWater (tile_l) && TileOps::isWater(tile_dl))
                                                 sdl = DOWNRIGHT;
-                                            if (TileOps::isWater (tile_d) && TileOps::isWater (tile_r) && TileOps::isWater(tile_dr))
+                                            if (TileOps::isDWater (tile_d) && TileOps::isDWater (tile_r) && TileOps::isWater(tile_dr))
                                                 sdr = DOWNLEFT;
                                         }
                                         _scode = sul+sur+sdl+sdr;
@@ -202,7 +201,7 @@ void RpgPainter::loadChipset(QString chipset_name) {
                                         QPixmap p_tile(tilesize, tilesize);
                                         p_tile.fill(QColor(0,0,0,0));
                                         QPainter p(&p_tile);
-                                        if (TileOps::isWater (terrain_id))
+                                        if (TileOps::isABWater (terrain_id))
                                             p.drawPixmap(0,0,tilesize,tilesize,o_chipset.copy(0, 4*r_tileSize,r_tileSize,r_tileSize));
                                         else
                                             p.drawPixmap(0,0,tilesize,tilesize,o_chipset.copy(0, 7*r_tileSize,r_tileSize,r_tileSize));
@@ -219,7 +218,7 @@ void RpgPainter::loadChipset(QString chipset_name) {
                                             blit(border_xoffset, 3*r_tileSize);
                                         else if (sul)
                                         {
-                                            if (TileOps::isWater (terrain_id))
+                                            if (TileOps::isABWater (terrain_id))
                                                 blit(0, 5*r_tileSize);
                                             else
                                                 blit(0, 6*r_tileSize);
@@ -236,7 +235,7 @@ void RpgPainter::loadChipset(QString chipset_name) {
                                             blit(border_xoffset+r_tileHalf, 3*r_tileSize);
                                         else if (sur)
                                         {
-                                            if (TileOps::isWater (terrain_id))
+                                            if (TileOps::isABWater (terrain_id))
                                                 blit(r_tileHalf, 5*r_tileSize);
                                             else
                                                 blit(r_tileHalf, 6*r_tileSize);
@@ -253,7 +252,7 @@ void RpgPainter::loadChipset(QString chipset_name) {
                                             blit(border_xoffset+r_tileHalf, r_tileSize*7/2);
                                         else if (sdr)
                                         {
-                                            if (TileOps::isWater (terrain_id))
+                                            if (TileOps::isABWater (terrain_id))
                                                 blit(tilesize/2, r_tileSize*11/2);
                                             else
                                                 blit(tilesize/2, r_tileSize*13/2);
@@ -270,7 +269,7 @@ void RpgPainter::loadChipset(QString chipset_name) {
                                             blit(border_xoffset, r_tileSize*7/2);
                                         else if (sdl)
                                         {
-                                            if (TileOps::isWater (terrain_id))
+                                            if (TileOps::isABWater (terrain_id))
                                                 blit(0, r_tileSize*11/2);
                                             else
                                                 blit(0, r_tileSize*13/2);

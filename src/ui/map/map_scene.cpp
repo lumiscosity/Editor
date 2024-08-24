@@ -95,7 +95,7 @@ MapScene::MapScene(ProjectData& project, int id, QGraphicsView *view, QObject *p
     addItem(m_panorama);
 	addItem(m_lowerpix);
 	addItem(m_upperpix);
-	Load();
+    Load();
 	QPen selPen(Qt::yellow);
 	selPen.setWidth(2);
 	m_selectionTile->setPen(selPen);
@@ -380,7 +380,6 @@ void MapScene::Save(bool properties_changed)
 	m_undoStack->clear();
 	emit mapSaved();
 }
-
 void MapScene::Load(bool revert)
 {
 	// FIXME: Many calls to core()
@@ -392,8 +391,12 @@ void MapScene::Load(bool revert)
 			break;
 		}
 
-	m_map = m_project.project().loadMap(n_mapInfo.ID);
-	m_lower =  m_map->lower_layer;
+    std::unique_ptr<lcf::rpg::Map> map = m_project.project().loadMap(n_mapInfo.ID);
+    if (map == nullptr) {
+        qWarning()<<"Map loading failed!";
+    }
+    m_map = m_project.project().loadMap(n_mapInfo.ID);
+    m_lower =  m_map->lower_layer;
 	m_upper =  m_map->upper_layer;
 
 	if (!revert) {

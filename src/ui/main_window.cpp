@@ -138,11 +138,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(&core(),
 			SIGNAL(layerChanged()),
 			m_paletteScene,
-			SLOT(onLayerChange()));
-	connect(&core(),
-			SIGNAL(chipsetChanged()),
-			m_paletteScene,
-			SLOT(onChipsetChange()));
+            SLOT(onLayerChange()));
 	update_actions();
 	updateLayerActions();
 	updateToolActions();
@@ -696,7 +692,10 @@ QGraphicsView *MainWindow::getView(int id)
 {
 	QGraphicsView* view = m_views[id];
 	if (!view)
-	{
+    {
+        if (core().project()->loadMap(id) == nullptr) {
+            return nullptr;
+        }
 		view = new QGraphicsView(this);
 		m_views[id] = view;
 		view->setTransformationAnchor(QGraphicsView::NoAnchor);
@@ -721,8 +720,6 @@ QGraphicsView *MainWindow::getView(int id)
 				SIGNAL(mapSaved()),
 				this,
 				SLOT(on_mapUnchanged()));
-        // FIXME: shouldn't be required anymore, but stub out if it breaks
-        // getScene(id)->setCurrentMapEvents(getScene(id)->mapEvents());
 		getScene(id)->setScale(2.0);
 		getScene(id)->Init();
 	}
@@ -858,11 +855,22 @@ void MainWindow::on_treeMap_itemDoubleClicked(QTreeWidgetItem *item, int column)
 	if (item->data(1,Qt::DisplayRole).toInt() == 0)
 		return;
 	QGraphicsView *view = getView(item->data(1,Qt::DisplayRole).toInt());
-	ui->tabMap->setCurrentWidget(view);
-    currentScene()->setTileset(currentScene()->chipsetId());
-    currentScene()->setCurrentMapEvents(currentScene()->mapEvents());
-    currentScene()->redrawMap();
-    m_paletteScene->onChipsetChange(currentScene()->sharePainterTiles());
+    if (view != nullptr) {
+        ui->tabMap->setCurrentWidget(view);
+        currentScene()->setTileset(currentScene()->chipsetId());
+        currentScene()->setCurrentMapEvents(currentScene()->mapEvents());
+        currentScene()->redrawMap();
+        m_paletteScene->onChipsetChange(currentScene()->sharePainterTiles());
+    } else {
+        QMessageBox::critical(
+            this,
+            tr("EasyRPG Editor"),
+            tr("The map is either missing or corrupted, and could not be loaded."),
+            QMessageBox::Ok,
+            QMessageBox::FirstButton
+        );
+        delete view;
+    }
 }
 
 void MainWindow::on_tabMap_tabCloseRequested(int index)

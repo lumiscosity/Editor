@@ -81,7 +81,7 @@ public slots:
 
 	void Save(bool properties_changed = false);
 
-	void Load(bool revert = false);
+    void Load(bool revert = false);
 
 	void undo();
 
