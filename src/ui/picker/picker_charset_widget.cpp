@@ -88,6 +88,7 @@ void PickerCharsetWidget::redrawImage(QPixmap image, QString filename) {
 
     if (filename.isEmpty() && m_map) {
         cell_width = cell_height = 16;
+        this->hide();
         m_painter.beginPainting(image);
         m_painter.renderTileOverview(RpgPainter::ALL_UPPER);
         m_painter.endPainting();
