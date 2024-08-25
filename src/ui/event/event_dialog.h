@@ -20,6 +20,7 @@
 #include <QDialog>
 #include <lcf/rpg/event.h>
 #include <lcf/rpg/database.h>
+#include <ui/map/map_scene.h>
 
 class ProjectData;
 
@@ -32,10 +33,10 @@ class EventDialog : public QDialog
 	Q_OBJECT
 
 public:
-    explicit EventDialog(ProjectData& project, QWidget *parent = nullptr);
+    explicit EventDialog(ProjectData& project, QWidget *parent = nullptr, MapScene *map = nullptr);
 	~EventDialog();
 
-	static int edit(QWidget *parent, lcf::rpg::Event& event, ProjectData& project);
+    static int edit(QWidget *parent, lcf::rpg::Event& event, ProjectData& project, MapScene *map);
 
 	static bool equalEvents(const lcf::rpg::Event &e1,
 							const lcf::rpg::Event &e2);
@@ -63,7 +64,9 @@ private:
 	lcf::rpg::Event a_event;
 	int lst_result;
 	ProjectData& m_project;
+    MapScene *m_map;
 	lcf::rpg::EventPage event_page_clipboard;
 
 	void refreshEventPageTabs();
+
 };

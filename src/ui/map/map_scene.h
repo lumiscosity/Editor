@@ -62,7 +62,7 @@ public:
     void setCurrentMapEvents(QMap<int, lcf::rpg::Event *> *events);
     void setTileset(int index);
     QSize setPanorama(QString name);
-    inline QMap<short, QPixmap> &sharePainterTiles() { return m_painter.sharePainterTiles(); };
+    inline std::shared_ptr<QMap<short, QPixmap>> &sharePainterTiles() { return m_painter.sharePainterTiles(); };
 
 signals:
 

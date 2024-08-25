@@ -22,12 +22,14 @@
 #include "event_page_widget.h"
 #include "core.h"
 #include "common/dbstring.h"
+#include <ui/map/map_scene.h>
 
 
-EventDialog::EventDialog(ProjectData& project, QWidget *parent) :
-	QDialog(parent),
+EventDialog::EventDialog(ProjectData& project, QWidget *parent, MapScene *map) :
+    QDialog(parent),
 	ui(new Ui::EventDialog),
-	m_project(project)
+    m_project(project),
+    m_map(map)
 {
 	ui->setupUi(this);
 	lst_result = QDialogButtonBox::Cancel;
@@ -46,10 +48,10 @@ EventDialog::~EventDialog()
 	delete ui;
 }
 
-int EventDialog::edit(QWidget *parent, lcf::rpg::Event& event, ProjectData& project)
+int EventDialog::edit(QWidget *parent, lcf::rpg::Event& event, ProjectData& project, MapScene *map)
 {
 	// FIXME: Use WidgetAsDialogWrapper instead of this function
-	EventDialog dlg(project, parent);
+    EventDialog dlg(project, parent, map);
 	dlg.setEvent(event);
 	dlg.exec();
 	if (dlg.lst_result != QDialogButtonBox::Cancel)
@@ -191,7 +193,7 @@ void EventDialog::refreshEventPageTabs() {
 	ui->tabEventPages->clear();
 	for (unsigned int i = 0; i < m_event.pages.size(); i++)
 	{
-		EventPageWidget *tab = new EventPageWidget(m_project, this);
+        EventPageWidget *tab = new EventPageWidget(m_project, this, this->m_map);
 		tab->setEventPage(&(m_event.pages[i]));
 		ui->tabEventPages->addTab(tab,QString::number(i+1));
 	}

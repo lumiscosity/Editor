@@ -19,6 +19,7 @@
 
 #include <QWidget>
 #include <lcf/rpg/actor.h>
+#include <ui/map/map_scene.h>
 #include "picker_child_widget.h"
 
 namespace Ui {
@@ -33,7 +34,7 @@ class PickerCharsetWidget : public PickerChildWidget {
 	Q_OBJECT
 
 public:
-    explicit PickerCharsetWidget(const int index, const int pattern, const int direction, const bool extended, QWidget* parent = nullptr);
+    explicit PickerCharsetWidget(const int index, const int pattern, const int direction, MapScene *map = nullptr, QWidget* parent = nullptr);
     ~PickerCharsetWidget();
 
 	void clicked(const QPointF& pos) override;
@@ -72,7 +73,8 @@ private:
     int m_index;
     int m_pattern;
     int m_direction;
-    bool m_extended;
+    MapScene* m_map;
+    RpgPainter m_painter;
 	QGraphicsRectItem* m_rect = nullptr;
 	QGraphicsPixmapItem* m_pixmap = nullptr;
 

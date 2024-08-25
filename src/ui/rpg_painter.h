@@ -41,13 +41,13 @@ public:
     void renderEvent(const lcf::rpg::Event& event, const QRect &dest_rect);
     void endPainting();
 
-    inline bool chipsetIsNull(QString chipset) {return m_chipset[0].isNull();}
+    inline bool chipsetIsNull() {return m_chipset->contains(0);}
 
-    inline QMap<short, QPixmap> &sharePainterTiles() { return m_chipset; };
-    void forceChipset(QMap<short, QPixmap> chipset);
+    inline std::shared_ptr<QMap<short, QPixmap>> &sharePainterTiles() { return m_chipset; };
+    void forceChipset(std::shared_ptr<QMap<short, QPixmap>> chipset);
 
 private:
-    QMap<short, QPixmap> m_chipset;
+    std::shared_ptr<QMap<short, QPixmap>> m_chipset = std::make_shared<QMap<short, QPixmap>>(QMap<short, QPixmap>());
     QMap<QString, QPixmap> *m_eventCache = nullptr;
     void loadChipset(QString chipset_name);
 

@@ -58,14 +58,8 @@ void PaletteScene::onLayerChange()
 	m_tiles->graphicsEffect()->setEnabled(core().layer() != Core::LOWER);
 }
 
-void PaletteScene::onChipsetChange(QMap<short, QPixmap> chipset)
+void PaletteScene::onChipsetChange(std::shared_ptr<QMap<short, QPixmap>> chipset)
 {
-    if (false)
-	{
-		m_tiles->setVisible(false);
-		m_selectionItem->setVisible(false);
-		return;
-	}
 	m_tiles->setVisible(true);
 	m_selectionItem->setVisible(true);
     m_lowerTiles = QPixmap(96, 448);

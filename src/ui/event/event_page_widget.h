@@ -26,6 +26,7 @@
 #include <lcf/rpg/database.h>
 #include <lcf/rpg/map.h>
 #include <ui/rpg_painter.h>
+#include <ui/map/map_scene.h>
 #include "ui/viewer/charset_graphics_item.h"
 #include <QProgressBar>
 #include <QLabel>
@@ -41,7 +42,7 @@ class EventPageWidget : public QWidget
 	Q_OBJECT
 
 public:
-	explicit EventPageWidget(ProjectData& project, QWidget *parent = nullptr);
+    explicit EventPageWidget(ProjectData& project, QWidget *parent = nullptr, MapScene *map = nullptr);
 	~EventPageWidget() override;
 
 	lcf::rpg::EventPage *eventPage() const;
@@ -76,5 +77,6 @@ private:
 	QGraphicsScene *m_scene = nullptr;
 	QGraphicsOpacityEffect *m_effect = nullptr;
     RpgPainter m_painter;
+    MapScene *m_map;
 };
 

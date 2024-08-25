@@ -19,16 +19,19 @@
 #include "ui_picker_charset_widget.h"
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
+#include <ui/map/map_scene.h>
 
-PickerCharsetWidget::PickerCharsetWidget(int index, int pattern, int direction, bool extended, QWidget *parent) :
+PickerCharsetWidget::PickerCharsetWidget(int index, int pattern, int direction, MapScene *map, QWidget *parent) :
     PickerChildWidget(parent),
     m_index(index),
     m_pattern(pattern),
     m_direction(direction),
-    m_extended(extended),
+    m_map(map),
     ui(new Ui::PickerCharsetWidget) {
-    if (extended) {
+    if (map) {
         ui->setupUi(this);
+
+        m_painter.forceChipset(map->sharePainterTiles());
 
         switch (m_pattern) {
         case 0:
@@ -83,14 +86,16 @@ void PickerCharsetWidget::redrawImage(QPixmap image, QString filename) {
         m_pixmap = new QGraphicsPixmapItem();
     }
 
-    if (filename.isEmpty() && m_extended) {
-        this->hide();
+    if (filename.isEmpty() && m_map) {
         cell_width = cell_height = 16;
+        m_painter.beginPainting(image);
+        m_painter.renderTileOverview(RpgPainter::ALL_UPPER);
+        m_painter.endPainting();
         m_pixmap->setPixmap(image);
         m_view->setItem(m_pixmap);
         updateRect();
     } else {
-        if (m_extended){
+        if (m_map){
             this->show();
         }
         if (filename.startsWith("$")) {
@@ -101,29 +106,19 @@ void PickerCharsetWidget::redrawImage(QPixmap image, QString filename) {
             cell_height = 32;
         }
 
-        QPixmap new_image = (filename.isEmpty() && m_extended) ? QPixmap(96, 384) : QPixmap(cell_width * 4, cell_height * 2);
+        QPixmap new_image = (filename.isEmpty() && m_map) ? QPixmap(96, 384) : QPixmap(cell_width * 4, cell_height * 2);
         new_image.fill(QColor(0,0,0,0));
 
-        QPainter* paint = new QPainter(&new_image);
-        if (filename.isEmpty() && m_extended) {
-            for (int i = 0; i < 8; ++i) {
-                int src_x = (i >= 48) ? ((i % 6) * 16) + 288 : ((i % 6) * 16) + 384;
-                int src_y = (i >= 48) ? ((i / 6) * 16) + 128 : (((i / 6) - 7) * 16);
-                int target_x = (i % 6) * 16;
-                int target_y = (i / 6) * 16;
-                paint->drawPixmap(QRect(target_x, target_y, 16, 16), image, QRect(src_x, src_y, 16, 16));
-            }
-        } else {
-            for (int i = 0; i < 8; ++i) {
-                int src_x = ((i % 4) * cell_width * 3 + (m_pattern * cell_width));
-                int src_y = (i >= 4) ? (m_direction + 4) * cell_height : m_direction * cell_height;
-                int target_x = (i % 4) * cell_width;
-                int target_y = i >= 4 ? cell_height : 0;
-                paint->drawPixmap(QRect(target_x, target_y, cell_width, cell_height), image, QRect(src_x, src_y, cell_width, cell_height));
-            }
+        m_painter.beginPainting(new_image);
+        for (int i = 0; i < 8; ++i) {
+            int src_x = ((i % 4) * cell_width * 3 + (m_pattern * cell_width));
+            int src_y = (i >= 4) ? (m_direction + 4) * cell_height : m_direction * cell_height;
+            int target_x = (i % 4) * cell_width;
+            int target_y = i >= 4 ? cell_height : 0;
+            m_painter.drawPixmap(QRect(target_x, target_y, cell_width, cell_height), image, QRect(src_x, src_y, cell_width, cell_height));
         }
-        delete paint;
 
+        m_painter.endPainting();
         m_pixmap->setPixmap(new_image);
         m_view->setItem(m_pixmap);
         updateRect();

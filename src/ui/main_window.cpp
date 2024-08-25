@@ -731,7 +731,7 @@ MapScene *MainWindow::getScene(int id)
 	QGraphicsView* view = m_views[id];
 	if (!view)
 		return nullptr;
-	return (static_cast<MapScene*>(view->scene()));
+    return (static_cast<MapScene*>(view->scene()));
 }
 
 QGraphicsView *MainWindow::getTabView(int index)

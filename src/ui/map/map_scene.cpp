@@ -430,7 +430,7 @@ void MapScene::on_actionNewEvent()
     event.y = cur_y;
 	event.pages.push_back(lcf::rpg::EventPage());
 
-	int result = EventDialog::edit(m_view, event, m_project);
+    int result = EventDialog::edit(m_view, event, m_project, this);
 	if (result != QDialogButtonBox::Cancel)
 	{
 		m_map->events.push_back(event);
@@ -445,7 +445,7 @@ void MapScene::on_actionEditEvent() {
 	for (ev = m_map->events.begin(); ev != m_map->events.end(); ++ev) {
 		if (_index(cur_x, cur_y) == _index(ev->x, ev->y)) {
 			lcf::rpg::Event backup = *ev;
-			int result = EventDialog::edit(m_view, *ev, m_project);
+            int result = EventDialog::edit(m_view, *ev, m_project, this);
 			if (result != QDialogButtonBox::Cancel) {
 				m_undoStack->push(new UndoEvent(backup, this));
 				emit mapChanged();

@@ -19,19 +19,21 @@
 #include "ui_event_page_widget.h"
 #include <QDialogButtonBox>
 #include <QMessageBox>
-#include "core.h"
 #include "ui/commands/all_commands.h"
 #include "common/dbstring.h"
 #include "common/lcf_widget_binding.h"
 #include <ui/picker/picker_charset_widget.h>
 #include <ui/picker/picker_dialog.h>
 
-EventPageWidget::EventPageWidget(ProjectData& project, QWidget *parent) :
+EventPageWidget::EventPageWidget(ProjectData& project, QWidget *parent, MapScene *map) :
 	QWidget(parent),
 	ui(new Ui::QEventWidget),
-	m_project(project)
+    m_project(project),
+    m_map(map)
 {
 	ui->setupUi(this);
+
+    m_painter.forceChipset(m_map->sharePainterTiles());
 
 	ui->comboVarOperation->addItem(tr("Equal to") + " (==)", lcf::rpg::EventPageCondition::Comparison_equal);
 	ui->comboVarOperation->addItem(tr("Greater or equal to") + " (>=)", lcf::rpg::EventPageCondition::Comparison_greater_equal);
@@ -243,7 +245,7 @@ void EventPageWidget::on_spinTimerBSec_valueChanged(int arg1)
 
 void EventPageWidget::on_pushSetSprite_clicked()
 {
-    auto* widget = new PickerCharsetWidget(m_eventPage->character_index, m_eventPage->character_pattern, m_eventPage->character_direction, true, this);
+    auto* widget = new PickerCharsetWidget(m_eventPage->character_index, m_eventPage->character_pattern, m_eventPage->character_direction, this->m_map, this);
     PickerDialog dialog(m_project, FileFinder::FileType::Image, widget, this);
     dialog.setWindowTitle(tr("Select a CharSet"));
     auto* button = dialog.addActionButton(tr("Use upper layer tiles"));
