@@ -190,7 +190,7 @@ void RpgPainter::loadChipset(QString chipset_name) {
                                             dr = DOWNRIGHT;
                                         _code += ul+ur+dl+dr;
                                         short id = TileOps::translate(terrain_id,_code,_scode);
-                                        if (!m_chipset->contains(id)) //item exist?
+                                        if (m_chipset->contains(id)) //item exist?
                                             continue;
                                         // Water B uses second block of 3x4 tiles for borders
                                         // Water A and Deep Water uses first block
