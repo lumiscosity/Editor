@@ -138,9 +138,12 @@ private:
 
 
 	QMenu *m_eventMenu;
-    QGraphicsPixmapItem *m_panorama;
-	QGraphicsPixmapItem *m_lowerpix;
-	QGraphicsPixmapItem *m_upperpix;
+    QGraphicsPixmapItem *m_panoramaitem;
+    QPixmap m_panoramapix;
+    QGraphicsPixmapItem *m_loweritem;
+    QPixmap m_lowerpix;
+    QGraphicsPixmapItem *m_upperitem;
+    QPixmap m_upperpix;
 	QGraphicsItemGroup* m_lines;
 	QGraphicsRectItem* m_selectionTile;
 	QUndoStack *m_undoStack;

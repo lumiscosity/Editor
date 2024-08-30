@@ -89,12 +89,12 @@ MapScene::MapScene(ProjectData& project, int id, QGraphicsView *view, QObject *p
 	connect(actions[7],SIGNAL(triggered()),this,SLOT(on_actionDeleteEvent()));
 
 	m_eventMenu->addActions(actions);
-    m_panorama = new QGraphicsPixmapItem();
-	m_lowerpix = new QGraphicsPixmapItem();
-	m_upperpix = new QGraphicsPixmapItem();
-    addItem(m_panorama);
-	addItem(m_lowerpix);
-	addItem(m_upperpix);
+    m_panoramaitem = new QGraphicsPixmapItem();
+    m_loweritem = new QGraphicsPixmapItem();
+    m_upperitem = new QGraphicsPixmapItem();
+    addItem(m_panoramaitem);
+    addItem(m_loweritem);
+    addItem(m_upperitem);
     Load();
 	QPen selPen(Qt::yellow);
 	selPen.setWidth(2);
@@ -106,17 +106,17 @@ MapScene::MapScene(ProjectData& project, int id, QGraphicsView *view, QObject *p
 	m_selecting = false;
     QGraphicsOpacityEffect * effect = new QGraphicsOpacityEffect(this);
     effect->setOpacity(0.7);
-    m_panorama->setGraphicsEffect(effect);
-	m_lowerpix->setGraphicsEffect(effect);
-	m_upperpix->setGraphicsEffect(new QGraphicsOpacityEffect(this));
+    m_panoramaitem->setGraphicsEffect(effect);
+    m_loweritem->setGraphicsEffect(effect);
+    m_upperitem->setGraphicsEffect(new QGraphicsOpacityEffect(this));
 	onLayerChanged();
     onToolChanged();
 }
 
 MapScene::~MapScene()
 {
-	delete m_lowerpix;
-	delete m_upperpix;
+    delete m_loweritem;
+    delete m_upperitem;
 	delete m_lines;
 	delete m_selectionTile;
 	delete m_undoStack;
@@ -136,22 +136,6 @@ void MapScene::Init()
 	connect(m_view->verticalScrollBar(),
 			SIGNAL(valueChanged(int)),
 			this,
-			SLOT(redrawMap()));
-	connect(m_view->horizontalScrollBar(),
-			SIGNAL(valueChanged(int)),
-			this,
-			SLOT(redrawMap()));
-	connect(m_view->verticalScrollBar(),
-			SIGNAL(rangeChanged(int,int)),
-			this,
-			SLOT(redrawMap()));
-	connect(m_view->horizontalScrollBar(),
-			SIGNAL(rangeChanged(int,int)),
-			this,
-			SLOT(redrawMap()));
-	connect(m_view->verticalScrollBar(),
-			SIGNAL(valueChanged(int)),
-			this,
 			SLOT(on_view_V_Scroll()));
 	connect(m_view->horizontalScrollBar(),
 			SIGNAL(valueChanged(int)),
@@ -168,7 +152,6 @@ void MapScene::Init()
 	m_view->verticalScrollBar()->setValue(n_mapInfo.scrollbar_y *static_cast<int>(m_scale));
 	m_view->horizontalScrollBar()->setValue(n_mapInfo.scrollbar_x * static_cast<int>(m_scale));
     m_init = true;
-	redrawMap();
 }
 
 float MapScene::scale() const
@@ -312,18 +295,18 @@ void MapScene::onLayerChanged()
 	switch (core().layer())
 	{
 	case Core::LOWER:
-		m_lowerpix->graphicsEffect()->setEnabled(false);
-		m_upperpix->graphicsEffect()->setEnabled(true);
+        m_loweritem->graphicsEffect()->setEnabled(false);
+        m_upperitem->graphicsEffect()->setEnabled(true);
 		m_lines->setVisible(false);
 		break;
 	case Core::UPPER:
-		m_lowerpix->graphicsEffect()->setEnabled(true);
-		m_upperpix->graphicsEffect()->setEnabled(false);
+        m_loweritem->graphicsEffect()->setEnabled(true);
+        m_upperitem->graphicsEffect()->setEnabled(false);
 		m_lines->setVisible(false);
 		break;
 	case Core::EVENT:
-		m_lowerpix->graphicsEffect()->setEnabled(false);
-		m_upperpix->graphicsEffect()->setEnabled(false);
+        m_loweritem->graphicsEffect()->setEnabled(false);
+        m_upperitem->graphicsEffect()->setEnabled(false);
 		m_lines->setVisible(true);
 		break;
 //	  default:
@@ -340,19 +323,19 @@ void MapScene::onToolChanged()
 	switch (core().tool())
 	{
 	case (Core::ZOOM):
-		m_lowerpix->setCursor(QCursor(QPixmap(":/icons/share/cur_zoom.png"),1,1));
+        m_loweritem->setCursor(QCursor(QPixmap(":/icons/share/cur_zoom.png"),1,1));
 		break;
 	case (Core::PENCIL):
-		m_lowerpix->setCursor(QCursor(QPixmap(":/icons/share/cur_pen.png"),1,1));
+        m_loweritem->setCursor(QCursor(QPixmap(":/icons/share/cur_pen.png"),1,1));
 		break;
 	case (Core::RECTANGLE):
-		m_lowerpix->setCursor(QCursor(QPixmap(":/icons/share/cur_rectangle.png"),1,1));
+        m_loweritem->setCursor(QCursor(QPixmap(":/icons/share/cur_rectangle.png"),1,1));
 		break;
 	case (Core::CIRCLE):
-		m_lowerpix->setCursor(QCursor(QPixmap(":/icons/share/cur_circle.png"),1,1));
+        m_loweritem->setCursor(QCursor(QPixmap(":/icons/share/cur_circle.png"),1,1));
 		break;
 	case (Core::FILL):
-		m_lowerpix->setCursor(QCursor(QPixmap(":/icons/share/cur_fill.png"),1,1));
+        m_loweritem->setCursor(QCursor(QPixmap(":/icons/share/cur_fill.png"),1,1));
 		break;
 	}
 }
@@ -370,12 +353,9 @@ void MapScene::Save(bool properties_changed)
 			break;
 		}
 	// Remember last active map
-	treeMap.active_node = n_mapInfo.ID;
-	// FIXME: ProjectData.Project is Const
-	core().project()->saveTreeMap();
-    QString file = QString("Map%1.emu").arg(QString::number(n_mapInfo.ID), 4, u'0');
+    treeMap.active_node = n_mapInfo.ID;
+    core().project()->saveTreeMap();
     lcf::LMU_Reader::PrepareSave(*m_map);
-    // FIXME: ProjectData.Project is Const
 	core().project()->saveMap(*m_map, n_mapInfo.ID);
 	m_undoStack->clear();
 	emit mapSaved();
@@ -398,6 +378,10 @@ void MapScene::Load(bool revert)
     m_map = m_project.project().loadMap(n_mapInfo.ID);
     m_lower =  m_map->lower_layer;
 	m_upper =  m_map->upper_layer;
+
+    m_panoramaitem->setPixmap(m_panoramapix);
+    m_loweritem->setPixmap(m_lowerpix);
+    m_upperitem->setPixmap(m_upperpix);
 
 	if (!revert) {
 		redrawGrid();
@@ -744,7 +728,7 @@ void MapScene::stopDrawing()
 {
 	m_cancelled = true;
 	m_drawing = false;
-	m_lowerpix->setCursor(QCursor(QPixmap(":/icons/share/cur_cancel.png"),1,1));
+    m_loweritem->setCursor(QCursor(QPixmap(":/icons/share/cur_cancel.png"),1,1));
 	m_lower = m_map->lower_layer;
 	m_upper = m_map->upper_layer;
 	redrawLayer(Core::LOWER);
@@ -755,7 +739,7 @@ void MapScene::stopSelecting()
 {
 	m_cancelled = true;
 	m_selecting = false;
-	m_lowerpix->setCursor(QCursor(QPixmap(":/icons/share/cur_cancel.png"),1,1));
+    m_loweritem->setCursor(QCursor(QPixmap(":/icons/share/cur_cancel.png"),1,1));
 	m_selectionTile->setVisible(false);
 	//cancel selection...
 }
@@ -787,14 +771,25 @@ void MapScene::updateArea(int x1, int y1, int x2, int y2)
 
 void MapScene::redrawLayer(Core::Layer layer)
 {
-    QSize size = getViewportContentSize();
-	QPixmap pix(size);
-    int start_x = m_view->horizontalScrollBar()->value()/s_tileSize;
-    int start_y = m_view->verticalScrollBar()->value()/s_tileSize;
-    int end_x = start_x+(size.width()-1)/s_tileSize;
-    int end_y = start_y+(size.height()-1)/s_tileSize;
-	pix.fill(QColor(0,0,0,0));
-    m_painter.beginPainting(pix);
+    QPixmap *pix = nullptr;
+
+    int start_x = 0;
+    int start_y = 0;
+    int end_x = m_map->width;
+    int end_y = m_map->height;
+    switch (layer) {
+    case (Core::LOWER):
+        m_lowerpix = QPixmap(m_map->width*s_tileSize, m_map->height*s_tileSize);
+        pix = &m_lowerpix;
+        break;
+    default:
+        m_upperpix = QPixmap(m_map->width*s_tileSize, m_map->height*s_tileSize);
+        pix = &m_upperpix;
+        break;
+    }
+
+    pix->fill(QColor(0,0,0,0));
+    m_painter.beginPainting(*pix);
 	for (int x = start_x; x <= end_x; x++)
 		for (int y = start_y; y <= end_y; y++)
 		{
@@ -820,13 +815,13 @@ void MapScene::redrawLayer(Core::Layer layer)
     m_painter.endPainting();
 	if (layer == Core::LOWER)
 	{
-		m_lowerpix->setPixmap(pix);
-		m_lowerpix->setPos(start_x*s_tileSize,start_y*s_tileSize);
+        m_loweritem->setPixmap(*pix);
+        m_loweritem->setPos(m_loweritem->offset());
 	}
 	else
 	{
-		m_upperpix->setPixmap(pix);
-		m_upperpix->setPos(start_x*s_tileSize,start_y*s_tileSize);
+        m_upperitem->setPixmap(*pix);
+        m_upperitem->setPos(m_loweritem->offset());
 	}
 }
 
@@ -1044,6 +1039,7 @@ int MapScene::getFirstFreeId() {
 }
 
 void MapScene::redrawPanorama() {
+    m_panoramapix = QPixmap(m_map->width*s_tileSize, m_map->height*s_tileSize);
     QSize panorama_size;
     if (!m_panoramaPixmap){
         QString panorama_name;
@@ -1059,27 +1055,22 @@ void MapScene::redrawPanorama() {
     QSize size = getViewportContentSize();
     int panorama_width = (int)(((float)s_tileSize / 16) * panorama_size.width());
     int panorama_height = (int)(((float)s_tileSize / 16) * panorama_size.height());
-    int start_x = m_view->horizontalScrollBar()->value()/panorama_width;
-    int start_y = m_view->verticalScrollBar()->value()/panorama_height;
-    int end_x = (start_x+(size.width()-1)/panorama_width)+1;
-    int end_y = (start_y+(size.height()-1)/panorama_height)+1;
-    int w_offset = m_view->horizontalScrollBar()->value()%panorama_width;
-    int h_offset = m_view->verticalScrollBar()->value()%panorama_height;
-    QPixmap pix(size);
-    pix.fill(QColor(0,0,0,255));
-    m_painter.beginPainting(pix);
-    for (int x = start_x; x <= end_x; x++)
-        for (int y = start_y; y <= end_y; y++)
+    int end_x = ((size.width()-1)/panorama_width)+1;
+    int end_y = ((size.height()-1)/panorama_height)+1;
+    m_panoramapix.fill(QColor(0,0,0,255));
+    m_painter.beginPainting(m_panoramapix);
+    for (int x = 0; x <= end_x; x++)
+        for (int y = 0; y <= end_y; y++)
         {
-            QRect dest_rect(((x-start_x) * panorama_width) - w_offset,
-                            ((y-start_y)* panorama_height) - h_offset,
+            QRect dest_rect(((x) * panorama_width),
+                            ((y)* panorama_height),
                             panorama_width,
                             panorama_height);
             m_painter.drawPixmap(dest_rect, m_panoramaPixmap);
         }
     m_painter.endPainting();
-    m_panorama->setPixmap(pix);
-    m_panorama->setPos(m_view->horizontalScrollBar()->value(), m_view->verticalScrollBar()->value());
+    m_panoramaitem->setPixmap(m_panoramapix);
+    //m_panoramaitem->setPos(m_view->horizontalScrollBar()->value(), m_view->verticalScrollBar()->value());
 }
 
 void MapScene::redrawGrid() {
