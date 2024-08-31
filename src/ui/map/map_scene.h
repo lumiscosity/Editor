@@ -64,6 +64,7 @@ public:
     QSize setPanorama(QString name);
     inline std::shared_ptr<QMap<short, QPixmap>> &sharePainterTiles() { return m_painter.sharePainterTiles(); };
 
+    void redrawArea(Core::Layer layer, int x1, int x2, int y1, int y2);
 signals:
 
 	void mapChanged();

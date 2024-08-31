@@ -766,17 +766,69 @@ void MapScene::updateArea(int x1, int y1, int x2, int y2)
 			}
 
 		}
-	redrawLayer(core().layer());
+    redrawArea(core().layer(), x1, x2, y1, y2);
+}
+
+void MapScene::redrawArea(Core::Layer layer, int x1, int x2, int y1, int y2) {
+    // FIXME: this actually performs worse??
+    // seems like there's some heavy overhead for painting large pixmaps
+    // we should split rendering into 8x8 or so chunks instead
+    QPixmap *pix = nullptr;
+
+    switch (layer) {
+    case (Core::LOWER):
+        pix = &m_lowerpix;
+        break;
+    default:
+        pix = &m_upperpix;
+        break;
+    }
+
+    m_painter.beginPainting(*pix);
+    // erase space to draw over
+    m_painter.setCompositionMode(QPainter::CompositionMode_Source);
+    m_painter.fillRect(QRect(QPoint(x1*s_tileSize, y1*s_tileSize), QPoint(x2*s_tileSize, y2*s_tileSize)), Qt::transparent);
+    m_painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+    for (int x = x1; x <= x2; x++)
+        for (int y = y1; y <= y2; y++)
+        {
+            if (x >= m_map->width || y >= m_map->height)
+                continue;
+            QRect dest_rect((x) * s_tileSize,
+                            (y) * s_tileSize,
+                            s_tileSize,
+                            s_tileSize);
+            redrawTile(layer, x, y, dest_rect);
+        }
+    // FIXME: still redrawing all events
+    if (layer == Core::UPPER)
+    {
+        for (unsigned int i = 0; i < m_map->events.size(); i++)
+        {
+            QRect rect((m_map->events[i].x) * s_tileSize,
+                       (m_map->events[i].y) * s_tileSize,
+                       s_tileSize,
+                       s_tileSize);
+            m_painter.renderEvent(m_map->events[i], rect);
+        }
+    }
+    m_painter.endPainting();
+    if (layer == Core::LOWER)
+    {
+        m_loweritem->setPixmap(*pix);
+        m_loweritem->setPos(m_loweritem->offset());
+    }
+    else
+    {
+        m_upperitem->setPixmap(*pix);
+        m_upperitem->setPos(m_loweritem->offset());
+    }
 }
 
 void MapScene::redrawLayer(Core::Layer layer)
 {
     QPixmap *pix = nullptr;
 
-    int start_x = 0;
-    int start_y = 0;
-    int end_x = m_map->width;
-    int end_y = m_map->height;
     switch (layer) {
     case (Core::LOWER):
         m_lowerpix = QPixmap(m_map->width*s_tileSize, m_map->height*s_tileSize);
@@ -788,41 +840,8 @@ void MapScene::redrawLayer(Core::Layer layer)
         break;
     }
 
-    pix->fill(QColor(0,0,0,0));
-    m_painter.beginPainting(*pix);
-	for (int x = start_x; x <= end_x; x++)
-		for (int y = start_y; y <= end_y; y++)
-		{
-			if (x >= m_map->width || y >= m_map->height)
-				continue;
-			QRect dest_rect((x-start_x)* s_tileSize,
-					   (y-start_y)* s_tileSize,
-					   s_tileSize,
-					   s_tileSize);
-			redrawTile(layer, x, y, dest_rect);
-		}
-	if (layer == Core::UPPER)
-	{
-		for (unsigned int i = 0; i <  m_map->events.size(); i++)
-		{
-			QRect rect((m_map->events[i].x-start_x)* s_tileSize,
-					   (m_map->events[i].y-start_y)* s_tileSize,
-					   s_tileSize,
-					   s_tileSize);
-            m_painter.renderEvent(m_map->events[i], rect);
-		}
-	}
-    m_painter.endPainting();
-	if (layer == Core::LOWER)
-	{
-        m_loweritem->setPixmap(*pix);
-        m_loweritem->setPos(m_loweritem->offset());
-	}
-	else
-	{
-        m_upperitem->setPixmap(*pix);
-        m_upperitem->setPos(m_loweritem->offset());
-	}
+    pix->fill(Qt::transparent);
+    redrawArea(layer, 0, m_map->width, 0, m_map->height);
 }
 
 void MapScene::drawPen()
