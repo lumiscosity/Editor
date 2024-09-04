@@ -17,32 +17,20 @@
 
 #pragma once
 
-#include "ui/common/tileset_scene.h"
-#include <QWidget>
-#include <lcf/rpg/chipset.h>
+#include <QGraphicsScene>
+#include <qgraphicsitem.h>
+#include <src/ui/rpg_painter.h>
 
-class ProjectData;
-
-namespace Ui {
-class ChipSetWidget;
-}
-
-class ChipSetWidget : public QWidget
+class TilesetScene : public QGraphicsScene
 {
-	Q_OBJECT
-
 public:
-	using value_type = lcf::rpg::Chipset;
+    TilesetScene(QString chipset_name = "", QObject *parent = nullptr);
 
-	explicit ChipSetWidget(ProjectData& project, QWidget *parent = nullptr);
-	~ChipSetWidget();
-
-	void setData(lcf::rpg::Chipset* chipset);
-
+    void set_chipset(QString name);
+    void force_chipset(QPixmap chipset);
+    void draw_overview(RpgPainter::TileOverviewMode mode);
+    QPixmap& share_chipset();
 private:
-	Ui::ChipSetWidget *ui;
-	ProjectData& m_project;
-    TilesetScene lower_scene;
-    TilesetScene upper_scene;
+    QPixmap chipset;
+    QGraphicsPixmapItem item;
 };
-

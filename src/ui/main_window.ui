@@ -22,7 +22,7 @@
     <item>
      <widget class="QTabWidget" name="tabMap">
       <property name="documentMode">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
       <property name="tabsClosable">
        <bool>true</bool>
@@ -111,7 +111,7 @@
      <string>Debug</string>
     </property>
     <addaction name="actionDebugRtpPath"/>
-    <addaction name="actionDebugEnableCaching"/>
+    <addaction name="actionReset_Cache"/>
    </widget>
    <addaction name="menuGame"/>
    <addaction name="menuMaps"/>
@@ -642,8 +642,8 @@
   </action>
   <action name="actionUndo">
    <property name="icon">
-    <iconset>
-     <normaloff>:/icons/share/old_revert.png</normaloff>:/icons/share/old_revert.png</iconset>
+    <iconset resource="../../resources/Resources.qrc">
+     <normaloff>:/dark/edit-undo</normaloff>:/dark/edit-undo</iconset>
    </property>
    <property name="text">
     <string>Undo</string>
@@ -660,8 +660,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>:/icons/share/old_zoom.png</normaloff>:/icons/share/old_zoom.png</iconset>
+    <iconset resource="../../resources/Resources.qrc">
+     <normaloff>:/dark/zoom</normaloff>:/dark/zoom</iconset>
    </property>
    <property name="text">
     <string>Zoom</string>
@@ -678,8 +678,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>:/icons/share/old_pen.png</normaloff>:/icons/share/old_pen.png</iconset>
+    <iconset resource="../../resources/Resources.qrc">
+     <normaloff>:/dark/draw-pen</normaloff>:/dark/draw-pen</iconset>
    </property>
    <property name="text">
     <string>Draw</string>
@@ -696,8 +696,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>:/icons/share/old_rectangle.png</normaloff>:/icons/share/old_rectangle.png</iconset>
+    <iconset resource="../../resources/Resources.qrc">
+     <normaloff>:/dark/draw-rectangle</normaloff>:/dark/draw-rectangle</iconset>
    </property>
    <property name="text">
     <string>Rectangle</string>
@@ -714,8 +714,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>:/icons/share/old_circle.png</normaloff>:/icons/share/old_circle.png</iconset>
+    <iconset resource="../../resources/Resources.qrc">
+     <normaloff>:/dark/draw-circle</normaloff>:/dark/draw-circle</iconset>
    </property>
    <property name="text">
     <string>Circle</string>
@@ -732,8 +732,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>:/icons/share/old_fill.png</normaloff>:/icons/share/old_fill.png</iconset>
+    <iconset resource="../../resources/Resources.qrc">
+     <normaloff>:/dark/draw-fill</normaloff>:/dark/draw-fill</iconset>
    </property>
    <property name="text">
     <string>Fill</string>
@@ -755,10 +755,10 @@
   </action>
   <action name="actionDebugRtpPath">
    <property name="text">
-    <string>Rtp Path</string>
+    <string>RTP Path</string>
    </property>
    <property name="toolTip">
-    <string>warning!: this feature will be disabled once OpenRTP is released</string>
+    <string>Set the RTP path</string>
    </property>
   </action>
   <action name="actionMapProperties">
@@ -775,8 +775,8 @@
   </action>
   <action name="actionMapNew">
    <property name="icon">
-    <iconset>
-     <normaloff>:/icons/share/old_new_map.png</normaloff>:/icons/share/old_new_map.png</iconset>
+    <iconset resource="../../resources/Resources.qrc">
+     <normaloff>:/dark/new</normaloff>:/dark/new</iconset>
    </property>
    <property name="text">
     <string>New Map</string>
@@ -787,8 +787,8 @@
   </action>
   <action name="actionMapCopy">
    <property name="icon">
-    <iconset>
-     <normaloff>:/icons/share/old_copy_map.png</normaloff>:/icons/share/old_copy_map.png</iconset>
+    <iconset resource="../../resources/Resources.qrc">
+     <normaloff>:/dark/edit-copy</normaloff>:/dark/edit-copy</iconset>
    </property>
    <property name="text">
     <string>Copy Map</string>
@@ -799,8 +799,8 @@
   </action>
   <action name="actionMapPaste">
    <property name="icon">
-    <iconset>
-     <normaloff>:/icons/share/old_paste_map.png</normaloff>:/icons/share/old_paste_map.png</iconset>
+    <iconset resource="../../resources/Resources.qrc">
+     <normaloff>:/dark/edit-paste</normaloff>:/dark/edit-paste</iconset>
    </property>
    <property name="text">
     <string>Paste Map</string>
@@ -811,8 +811,8 @@
   </action>
   <action name="actionMapDelete">
    <property name="icon">
-    <iconset>
-     <normaloff>:/icons/share/old_delete_map.png</normaloff>:/icons/share/old_delete_map.png</iconset>
+    <iconset resource="../../resources/Resources.qrc">
+     <normaloff>:/dark/edit-delete</normaloff>:/dark/edit-delete</iconset>
    </property>
    <property name="text">
     <string>Delete Map</string>
@@ -835,8 +835,15 @@
     <string>Enable caching in the searchdialog</string>
    </property>
   </action>
+  <action name="actionReset_Cache">
+   <property name="text">
+    <string>Reset Cache</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="../../resources/Resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

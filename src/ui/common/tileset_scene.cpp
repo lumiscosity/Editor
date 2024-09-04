@@ -15,34 +15,26 @@
  * along with EasyRPG Editor. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#include "tileset_scene.h"
+#include "common/image_loader.h"
 
-#include "ui/common/tileset_scene.h"
-#include <QWidget>
-#include <lcf/rpg/chipset.h>
+#include <core.h>
+#include <qgraphicsitem.h>
 
-class ProjectData;
-
-namespace Ui {
-class ChipSetWidget;
+TilesetScene::TilesetScene(QString chipset_name, QObject *parent) : QGraphicsScene(parent) {
+    set_chipset(chipset_name);
+    addItem(&item);
 }
 
-class ChipSetWidget : public QWidget
-{
-	Q_OBJECT
+void TilesetScene::set_chipset(QString name) {
+    chipset = ImageLoader::Load(core().project()->findFile(CHIPSET, name, FileFinder::FileType::Image), false);
+    item.setPixmap(chipset);
+}
 
-public:
-	using value_type = lcf::rpg::Chipset;
+void TilesetScene::force_chipset(QPixmap chipset) {
+    item.setPixmap(chipset);
+}
 
-	explicit ChipSetWidget(ProjectData& project, QWidget *parent = nullptr);
-	~ChipSetWidget();
-
-	void setData(lcf::rpg::Chipset* chipset);
-
-private:
-	Ui::ChipSetWidget *ui;
-	ProjectData& m_project;
-    TilesetScene lower_scene;
-    TilesetScene upper_scene;
-};
-
+QPixmap& TilesetScene::share_chipset() {
+    return chipset;
+}

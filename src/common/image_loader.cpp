@@ -23,7 +23,6 @@
 
 QColor ImageLoader::getTransparent(const QString& path) {
     QImage source(path);
-    QColor color = QColor();
     if (source.colorCount() > 0)
         return QColor(source.color(0));
     else

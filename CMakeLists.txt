@@ -175,6 +175,8 @@ set(EDITOR_SOURCES
 	src/ui/common/system_color_combobox.h
 	src/ui/common/widget_as_dialog_model_wrapper.h
 	src/ui/common/widget_as_dialog_wrapper.h
+        src/ui/common/tileset_scene.h
+        src/ui/common/tileset_scene.cpp
 	src/ui/database/actor_delegate.cpp
 	src/ui/database/actor_delegate.h
 	src/ui/database/actor_widget.cpp

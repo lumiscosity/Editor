@@ -168,7 +168,6 @@ void MapScene::Init()
 	m_view->verticalScrollBar()->setValue(n_mapInfo.scrollbar_y *static_cast<int>(m_scale));
 	m_view->horizontalScrollBar()->setValue(n_mapInfo.scrollbar_x * static_cast<int>(m_scale));
     m_init = true;
-	redrawMap();
 }
 
 float MapScene::scale() const
@@ -403,7 +402,6 @@ void MapScene::Load(bool revert)
 		redrawGrid();
 	}
 
-	redrawMap();
 	m_undoStack->clear();
 	emit mapReverted();
 }

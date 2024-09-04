@@ -16,6 +16,7 @@
  */
 
 #include "chipset_widget.h"
+#include "common/dbstring.h"
 #include "ui_chipset_widget.h"
 
 ChipSetWidget::ChipSetWidget(ProjectData& project, QWidget *parent) :
@@ -26,12 +27,13 @@ ChipSetWidget::ChipSetWidget(ProjectData& project, QWidget *parent) :
 	ui->setupUi(this);
 }
 
-ChipSetWidget::~ChipSetWidget()
-{
+ChipSetWidget::~ChipSetWidget() {
 	delete ui;
 }
 
-void ChipSetWidget::setData(lcf::rpg::Chipset* /* chipset */)
-{
-
+void ChipSetWidget::setData(lcf::rpg::Chipset* chipset) {
+    lower_scene.set_chipset(ToQString(chipset->chipset_name));
+    ui->lowerGraphicsView->setScene(&lower_scene);
+    upper_scene.force_chipset(lower_scene.share_chipset());
+    ui->upperGraphicsView->setScene(&upper_scene);
 }
