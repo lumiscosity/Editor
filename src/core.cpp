@@ -246,6 +246,6 @@ QPixmap Core::createDummyPixmap(int width, int height)
 	return dummy;
 }
 
-QMap<QString, QPixmap> &Core::getEventCache() {
+QHash<QString, QPixmap> &Core::getEventCache() {
     return m_eventCache;
 }

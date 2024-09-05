@@ -43,12 +43,12 @@ public:
 
     inline bool chipsetIsNull() {return m_chipset->contains(0);}
 
-    inline std::shared_ptr<QMap<short, QPixmap>> &sharePainterTiles() { return m_chipset; };
-    void forceChipset(std::shared_ptr<QMap<short, QPixmap>> chipset);
+    inline std::shared_ptr<QHash<short, QPixmap>> &sharePainterTiles() { return m_chipset; };
+    void forceChipset(std::shared_ptr<QHash<short, QPixmap>> chipset);
 
 private:
-    std::shared_ptr<QMap<short, QPixmap>> m_chipset = std::make_shared<QMap<short, QPixmap>>(QMap<short, QPixmap>());
-    QMap<QString, QPixmap> *m_eventCache = nullptr;
+    std::shared_ptr<QHash<short, QPixmap>> m_chipset = std::make_shared<QHash<short, QPixmap>>(QHash<short, QPixmap>());
+    QHash<QString, QPixmap> *m_eventCache = nullptr;
     void loadChipset(QString chipset_name);
 
 };

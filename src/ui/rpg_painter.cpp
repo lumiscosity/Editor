@@ -23,6 +23,8 @@
 RpgPainter::RpgPainter(QString chipset) {
     setChipset(chipset);
     m_eventCache = &core().getEventCache();
+    setRenderHint(QPainter::Antialiasing, false);
+    setRenderHint(QPainter::LosslessImageRendering, false);
 }
 
 enum TileOverviewMode
@@ -32,7 +34,7 @@ enum TileOverviewMode
     ALL_UPPER
 };
 
-void RpgPainter::forceChipset(std::shared_ptr<QMap<short, QPixmap>> chipset) {
+void RpgPainter::forceChipset(std::shared_ptr<QHash<short, QPixmap>> chipset) {
     m_chipset = chipset;
 }
 

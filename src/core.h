@@ -95,7 +95,7 @@ public:
 
 	std::shared_ptr<Project>& project();
     const std::shared_ptr<Project>& project() const;
-    QMap<QString, QPixmap> &getEventCache();
+    QHash<QString, QPixmap> &getEventCache();
 
 signals:
 	void toolChanged();
@@ -110,7 +110,7 @@ private:
     QString m_rtpDir;
 	Layer m_layer;
     Tool m_tool;
-	QMap<QString, QPixmap> m_eventCache;
+    QHash<QString, QPixmap> m_eventCache;
 	std::vector<short> m_lowerSel;
 	std::vector<short> m_upperSel;
 	short m_eventSel;
