@@ -30,6 +30,7 @@
 #include <QListWidget>
 #include <lcf/rpg/map.h>
 #include <lcf/rpg/chipset.h>
+#include <vendor/hash_map.hpp>
 #include "ui/other/run_game_dialog.h"
 #include "model/project.h"
 
@@ -95,7 +96,7 @@ public:
 
 	std::shared_ptr<Project>& project();
     const std::shared_ptr<Project>& project() const;
-    QHash<QString, QPixmap> &getEventCache();
+    emilib::HashMap<QString, QPixmap> &getEventCache();
 
 signals:
 	void toolChanged();
@@ -110,7 +111,7 @@ private:
     QString m_rtpDir;
 	Layer m_layer;
     Tool m_tool;
-    QHash<QString, QPixmap> m_eventCache;
+    emilib::HashMap<QString, QPixmap> m_eventCache;
 	std::vector<short> m_lowerSel;
 	std::vector<short> m_upperSel;
 	short m_eventSel;

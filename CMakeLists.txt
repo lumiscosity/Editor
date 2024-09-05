@@ -14,6 +14,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Source Files
 set(EDITOR_SOURCES
+	src/vendor/hash_map.hpp
+	src/vendor/loguru.cpp
+	src/vendor/loguru.hpp
 	src/common/dbstring.h
 	src/common/filefinder.cpp
 	src/common/filefinder.h

@@ -34,7 +34,7 @@ enum TileOverviewMode
     ALL_UPPER
 };
 
-void RpgPainter::forceChipset(std::shared_ptr<QHash<short, QPixmap>> chipset) {
+void RpgPainter::forceChipset(std::shared_ptr<emilib::HashMap<short, QPixmap>> chipset) {
     m_chipset = chipset;
 }
 
@@ -51,7 +51,7 @@ void RpgPainter::beginPainting(QPixmap &dest) {
 }
 
 void RpgPainter::renderTile(const short &tile_id, const QRect &dest_rect) {
-    this->drawPixmap(dest_rect, m_chipset->value(tile_id));
+    this->drawPixmap(dest_rect, m_chipset->get_or_return_default(tile_id));
 }
 
 void RpgPainter::renderTileOverview(const TileOverviewMode mode) {
@@ -100,7 +100,7 @@ void RpgPainter::renderEvent(const lcf::rpg::Event& event, const QRect &dest_rec
 
         if (!m_eventCache->contains(check))
             core().cacheEvent(&event, check);
-        this->drawPixmap(final_rect, m_eventCache->value(check), QRect(0,6,24,24));
+        this->drawPixmap(final_rect, m_eventCache->get_or_return_default(check), QRect(0,6,24,24));
     }
 }
 
@@ -531,7 +531,7 @@ void RpgPainter::loadChipset(QString chipset_name) {
             int orig_y = tile_row*r_tileSize;
             ef.drawPixmap(0,0,tilesize,tilesize,o_chipset.copy(orig_x,orig_y,r_tileSize,r_tileSize));
             ef.end();
-           m_chipset->insert(TileOps::translate(terrain_id), ef_tile);
+            m_chipset->insert(TileOps::translate(terrain_id), ef_tile);
             terrain_id++;
         }
 
