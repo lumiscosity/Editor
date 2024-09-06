@@ -33,7 +33,9 @@ ChipSetWidget::~ChipSetWidget() {
 
 void ChipSetWidget::setData(lcf::rpg::Chipset* chipset) {
     lower_scene.set_chipset(ToQString(chipset->chipset_name));
+    lower_scene.draw_overview(RpgPainter::ALL_LOWER);
     ui->lowerGraphicsView->setScene(&lower_scene);
     upper_scene.force_chipset(lower_scene.share_chipset());
+    upper_scene.draw_overview(RpgPainter::ALL_UPPER);
     ui->upperGraphicsView->setScene(&upper_scene);
 }

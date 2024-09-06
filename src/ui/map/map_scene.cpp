@@ -91,10 +91,10 @@ MapScene::MapScene(ProjectData& project, int id, QGraphicsView *view, QObject *p
 	m_eventMenu->addActions(actions);
     m_panorama = new QGraphicsPixmapItem();
 	m_lowerpix = new QGraphicsPixmapItem();
-	m_upperpix = new QGraphicsPixmapItem();
+    m_upperpix = new QGraphicsPixmapItem();
     addItem(m_panorama);
 	addItem(m_lowerpix);
-	addItem(m_upperpix);
+    addItem(m_upperpix);
     Load();
 	QPen selPen(Qt::yellow);
 	selPen.setWidth(2);
@@ -132,15 +132,15 @@ void MapScene::Init()
 	connect(m_view->horizontalScrollBar(),
 			SIGNAL(actionTriggered(int)),
 			this,
-			SLOT(on_user_interaction()));
-	connect(m_view->verticalScrollBar(),
-			SIGNAL(valueChanged(int)),
-			this,
-			SLOT(redrawMap()));
-	connect(m_view->horizontalScrollBar(),
-			SIGNAL(valueChanged(int)),
-			this,
-			SLOT(redrawMap()));
+            SLOT(on_user_interaction()));
+    connect(m_view->verticalScrollBar(),
+            SIGNAL(valueChanged(int)),
+            this,
+            SLOT(redrawMap()));
+    connect(m_view->horizontalScrollBar(),
+            SIGNAL(valueChanged(int)),
+            this,
+            SLOT(redrawMap()));
 	connect(m_view->verticalScrollBar(),
 			SIGNAL(rangeChanged(int,int)),
 			this,
@@ -520,9 +520,9 @@ void MapScene::on_view_V_Scroll()
 	if (!m_userInteraction || !m_init)
 		return;
 	if (m_view->verticalScrollBar()->isVisible())
-	{
+    {
 		n_mapInfo.scrollbar_y = m_view->verticalScrollBar()->value() / static_cast<double>(m_scale);
-	}
+    }
 	m_userInteraction = false;
 }
 
@@ -531,7 +531,7 @@ void MapScene::on_view_H_Scroll()
 	if (!m_userInteraction || !m_init)
 		return;
 	if (m_view->horizontalScrollBar()->isVisible())
-	{
+    {
 		n_mapInfo.scrollbar_x = m_view->horizontalScrollBar()->value() / static_cast<double>(m_scale);
 	}
 	m_userInteraction = false;
@@ -760,7 +760,7 @@ void MapScene::stopSelecting()
 
 void MapScene::updateArea(int x1, int y1, int x2, int y2)
 {
-	//Normalize
+    //Normalize
 	if (x1 < 0)
 		x1 = 0;
 	if (y1 < 0)
@@ -780,7 +780,47 @@ void MapScene::updateArea(int x1, int y1, int x2, int y2)
 			}
 
 		}
-	redrawLayer(core().layer());
+    redrawArea(core().layer(), x1, y1, x2, y2);
+}
+
+void MapScene::redrawArea(Core::Layer layer, int x1, int y1, int x2, int y2)
+{
+    QPixmap pix = layer == Core::LOWER ? m_lowerpix->pixmap() : m_upperpix->pixmap();
+    int offset_x = m_view->horizontalScrollBar()->value() / s_tileSize;
+    int offset_y = m_view->verticalScrollBar()->value() / s_tileSize;
+    m_painter.beginPainting(pix);
+    m_painter.setCompositionMode(QPainter::CompositionMode_Source);
+    for (int x = x1; x <= x2; x++)
+        for (int y = y1; y <= y2; y++)
+        {
+            if (x >= m_map->width || y >= m_map->height)
+                continue;
+            QRect dest_rect((x-offset_x)* s_tileSize,
+                            (y-offset_y)* s_tileSize,
+                            s_tileSize,
+                            s_tileSize);
+            redrawTile(layer, x, y, dest_rect);
+        }
+    if (layer == Core::UPPER)
+    {
+        for (unsigned int i = 0; i < m_map->events.size(); i++)
+        {
+            QRect rect((m_map->events[i].x-x1)* s_tileSize,
+                       (m_map->events[i].y-y1)* s_tileSize,
+                       s_tileSize,
+                       s_tileSize);
+            //m_painter.renderEvent(m_map->events[i], rect);
+        }
+    }
+    m_painter.endPainting();
+    if (layer == Core::LOWER)
+    {
+        m_lowerpix->setPixmap(pix);
+    }
+    else
+    {
+        m_upperpix->setPixmap(pix);
+    }
 }
 
 void MapScene::redrawLayer(Core::Layer layer)
@@ -806,7 +846,7 @@ void MapScene::redrawLayer(Core::Layer layer)
 		}
 	if (layer == Core::UPPER)
 	{
-		for (unsigned int i = 0; i <  m_map->events.size(); i++)
+        for (unsigned int i = 0; i < m_map->events.size(); i++)
 		{
 			QRect rect((m_map->events[i].x-start_x)* s_tileSize,
 					   (m_map->events[i].y-start_y)* s_tileSize,
@@ -819,12 +859,12 @@ void MapScene::redrawLayer(Core::Layer layer)
 	if (layer == Core::LOWER)
 	{
 		m_lowerpix->setPixmap(pix);
-		m_lowerpix->setPos(start_x*s_tileSize,start_y*s_tileSize);
+        m_lowerpix->setPos(start_x*s_tileSize,start_y*s_tileSize);
 	}
 	else
 	{
 		m_upperpix->setPixmap(pix);
-		m_upperpix->setPos(start_x*s_tileSize,start_y*s_tileSize);
+        m_upperpix->setPos(start_x*s_tileSize,start_y*s_tileSize);
 	}
 }
 
@@ -867,7 +907,8 @@ void MapScene::drawRect()
 			else if (core().layer() == Core::UPPER)
 				m_upper[static_cast<size_t>(_index(x,y))] = core().selection(x-fst_x,y-fst_y);
 		}
-	updateArea(x1-2, y1-2, x2+2, y2+2);
+    // FIXME: without a redrawLayer it doesn't clean up after itself properly
+    updateArea(x1-2, y1-2, x2+2, y2+2);
 }
 
 void MapScene::drawFill(int terrain_id, int x, int y)

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>532</width>
+    <width>544</width>
     <height>617</height>
    </rect>
   </property>
@@ -73,7 +73,7 @@
      </property>
      <widget class="QWidget" name="lowerLayerTab">
       <attribute name="title">
-       <string>Lower layer</string>
+       <string>Lower Layer</string>
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
@@ -324,15 +324,21 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>208</width>
+           <width>220</width>
            <height>0</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>208</width>
+           <width>220</width>
            <height>16777215</height>
           </size>
+         </property>
+         <property name="verticalScrollBarPolicy">
+          <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOn</enum>
+         </property>
+         <property name="sizeAdjustPolicy">
+          <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents</enum>
          </property>
         </widget>
        </item>
@@ -368,7 +374,7 @@
      </widget>
      <widget class="QWidget" name="upperLayerTab">
       <attribute name="title">
-       <string>Upper layer</string>
+       <string>Upper Layer</string>
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
@@ -500,15 +506,21 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>208</width>
+           <width>220</width>
            <height>0</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>208</width>
+           <width>220</width>
            <height>16777215</height>
           </size>
+         </property>
+         <property name="verticalScrollBarPolicy">
+          <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOn</enum>
+         </property>
+         <property name="sizeAdjustPolicy">
+          <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents</enum>
          </property>
         </widget>
        </item>

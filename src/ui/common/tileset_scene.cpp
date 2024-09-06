@@ -24,17 +24,49 @@
 TilesetScene::TilesetScene(QString chipset_name, QObject *parent) : QGraphicsScene(parent) {
     set_chipset(chipset_name);
     addItem(&item);
+    item.setScale(2);
 }
 
 void TilesetScene::set_chipset(QString name) {
-    chipset = ImageLoader::Load(core().project()->findFile(CHIPSET, name, FileFinder::FileType::Image), false);
-    item.setPixmap(chipset);
+    m_chipset = ImageLoader::Load(core().project()->findFile(CHIPSET, name, FileFinder::FileType::Image), false);
 }
 
 void TilesetScene::force_chipset(QPixmap chipset) {
-    item.setPixmap(chipset);
+    m_chipset = chipset;
+}
+
+void TilesetScene::draw_overview(RpgPainter::TileOverviewMode mode) {
+    QPainter painter;
+    QPixmap pixmap(96, mode == RpgPainter::ALL_LOWER ? 432 : 384);
+    pixmap.fill(Qt::transparent);
+    painter.begin(&pixmap);
+    switch (mode) {
+    case RpgPainter::ALL_LOWER:
+        painter.drawPixmap(QRect(0, 0, 16, 16), m_chipset.copy(QRect(0, 0, 16, 16)));
+        painter.drawPixmap(QRect(16, 0, 16, 16), m_chipset.copy(QRect(48, 0, 16, 16)));
+        painter.drawPixmap(QRect(32, 0, 16, 16), m_chipset.copy(QRect(0, 64, 16, 16)));
+        for (int i = 48; i == 80; i += 16){
+            painter.drawPixmap(QRect(i, 0, 16, 16), m_chipset.copy(QRect(i, 64, 16, 16)));
+        }
+        for (int i = 0; i == 12; i++){
+            painter.drawPixmap(QRect(i%6, 16+i/6, 16, 16), m_chipset.copy(QRect(i > 4 ? (i%2)*48 : 96 + (i%2)*48, i > 4 ? 128 + (i/2)*64 : (i/2)*64 - 128, 16, 16)));
+        }
+        painter.drawPixmap(QRect(0, 48, 96, 256), m_chipset.copy(QRect(192, 0, 96, 256)));
+        painter.drawPixmap(QRect(0, 304, 96, 128), m_chipset.copy(QRect(288, 0, 96, 128)));
+        break;
+    case RpgPainter::NONAUTO_LOWER:
+        painter.drawPixmap(QRect(0, 0, 96, 256), m_chipset.copy(QRect(192, 0, 96, 256)));
+        painter.drawPixmap(QRect(0, 256, 96, 128), m_chipset.copy(QRect(288, 0, 96, 128)));
+        break;
+    case RpgPainter::ALL_UPPER:
+        painter.drawPixmap(QRect(0, 0, 96, 128), m_chipset.copy(QRect(288, 128, 96, 128)));
+        painter.drawPixmap(QRect(0, 128, 96, 256), m_chipset.copy(QRect(384, 0, 96, 256)));
+        break;
+    }
+    painter.end();
+    item.setPixmap(pixmap);
 }
 
 QPixmap& TilesetScene::share_chipset() {
-    return chipset;
+    return m_chipset;
 }

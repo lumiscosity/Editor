@@ -31,6 +31,6 @@ public:
     void draw_overview(RpgPainter::TileOverviewMode mode);
     QPixmap& share_chipset();
 private:
-    QPixmap chipset;
+    QPixmap m_chipset;
     QGraphicsPixmapItem item;
 };

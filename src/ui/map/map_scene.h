@@ -63,7 +63,6 @@ public:
     void setTileset(int index);
     QSize setPanorama(QString name);
     inline std::shared_ptr<emilib::HashMap<short, QPixmap>> &sharePainterTiles() { return m_painter.sharePainterTiles(); };
-
 signals:
 
 	void mapChanged();
@@ -104,9 +103,9 @@ private slots:
 
 	void on_user_interaction();
 
-	void on_view_V_Scroll();
+    void on_view_V_Scroll();
 
-	void on_view_H_Scroll();
+    void on_view_H_Scroll();
 
 protected:
 	void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -125,6 +124,7 @@ private:
 	void stopDrawing();
 	void stopSelecting();
 	void updateArea(int x1, int y1, int x2, int y2);
+    void redrawArea(Core::Layer layer, int x1, int y1, int x2, int y2);
 	void redrawLayer(Core::Layer layer);
 	void drawPen();
 	void drawRect();
@@ -169,5 +169,7 @@ private:
     RpgPainter m_painter;
     QPixmap m_panoramaPixmap;
     QMap<int, lcf::rpg::Event*> *m_currentMapEvents;
+    int m_lastHScrollPos;
+    int m_lastVScrollPos;
 };
 
