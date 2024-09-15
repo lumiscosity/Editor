@@ -31,6 +31,7 @@ EventCommandsWidget::EventCommandsWidget(QWidget* parent) :
 	QTreeWidget(parent)
 {
 	setHeaderHidden(true);
+    setUniformRowHeights(true);
 
 	setContextMenuPolicy(Qt::CustomContextMenu);
 

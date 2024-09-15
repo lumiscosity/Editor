@@ -14,9 +14,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Source Files
 set(EDITOR_SOURCES
-	src/vendor/hash_map.hpp
-	src/vendor/loguru.cpp
-	src/vendor/loguru.hpp
+	src/vendor/hash_table8.hpp
 	src/common/dbstring.h
 	src/common/filefinder.cpp
 	src/common/filefinder.h
@@ -28,14 +26,14 @@ set(EDITOR_SOURCES
 	src/common/signal_blocker.h
 	src/common/sortfilter_proxy_models.cpp
 	src/common/sortfilter_proxy_models.h
-        src/common/tileops.cpp
-        src/common/tileops.h
+	src/common/tileops.cpp
+	src/common/tileops.h
 	src/core.cpp
 	src/core.h
 	src/defines.h
 	src/main.cpp
-        src/ui/rpg_painter.cpp
-        src/ui/rpg_painter.h
+	src/ui/rpg_painter.cpp
+	src/ui/rpg_painter.h
 	src/model/actor.cpp
 	src/model/actor.h
 	src/model/animation.cpp
@@ -178,8 +176,8 @@ set(EDITOR_SOURCES
 	src/ui/common/system_color_combobox.h
 	src/ui/common/widget_as_dialog_model_wrapper.h
 	src/ui/common/widget_as_dialog_wrapper.h
-        src/ui/common/tileset_scene.h
-        src/ui/common/tileset_scene.cpp
+	src/ui/common/tileset_scene.h
+	src/ui/common/tileset_scene.cpp
 	src/ui/database/actor_delegate.cpp
 	src/ui/database/actor_delegate.h
 	src/ui/database/actor_widget.cpp
@@ -307,7 +305,7 @@ set(EDITOR_SOURCES
 	src/ui/picker/picker_child_widget.h
 	src/ui/picker/picker_charset_widget.cpp
 	src/ui/picker/picker_charset_widget.h
-        src/ui/picker/picker_charset_widget.ui
+	src/ui/picker/picker_charset_widget.ui
 	src/ui/picker/picker_faceset_widget.cpp
 	src/ui/picker/picker_faceset_widget.h
 	src/ui/picker/picker_panorama_widget.cpp
@@ -324,7 +322,7 @@ set(EDITOR_SOURCES
 	src/ui/viewer/rpg_graphics_view.cpp
 	src/ui/viewer/rpg_graphics_view.h
 	src/ui/viewer/stat_curve_graphics_item.cpp
-        src/ui/viewer/stat_curve_graphics_item.h
+	src/ui/viewer/stat_curve_graphics_item.h
 )
 
 if(APPLE)

@@ -426,7 +426,9 @@ void MapScene::on_actionNewEvent()
     event.name = ToDBString(QString("EV%1").arg(QString::number(id), 4, u'0'));
     event.x = cur_x;
     event.y = cur_y;
-	event.pages.push_back(lcf::rpg::EventPage());
+    lcf::rpg::EventPage page;
+    page.ID = 1;
+    event.pages.push_back(page);
 
     int result = EventDialog::edit(m_view, event, m_project, this);
 	if (result != QDialogButtonBox::Cancel)

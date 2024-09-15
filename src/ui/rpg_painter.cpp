@@ -34,7 +34,7 @@ enum TileOverviewMode
     ALL_UPPER
 };
 
-void RpgPainter::forceChipset(std::shared_ptr<emilib::HashMap<short, QPixmap>> chipset) {
+void RpgPainter::forceChipset(std::shared_ptr<emhash8::HashMap<short, QPixmap>> chipset) {
     m_chipset = chipset;
 }
 
@@ -277,7 +277,7 @@ void RpgPainter::loadChipset(QString chipset_name) {
                                                 blit(0, r_tileSize*13/2);
                                         }
 #undef blit
-                                        m_chipset->insert(id, p_tile);
+                                        m_chipset->do_assign(id, p_tile);
                                     }
 
     /* Register AnimationTiles */
@@ -286,15 +286,15 @@ void RpgPainter::loadChipset(QString chipset_name) {
     QPainter a(&a_tile);
     a.drawPixmap(0,0,tilesize,tilesize,o_chipset.copy(3*r_tileSize,4*r_tileSize,r_tileSize,r_tileSize));
     for (int i = 0; i < 50; i++) {
-       m_chipset->insert(TileOps::translate(3) + i, a_tile);
+       m_chipset->do_assign(TileOps::translate(3) + i, a_tile);
     }
     a.drawPixmap(0,0,tilesize,tilesize,o_chipset.copy(4*r_tileSize,4*r_tileSize,r_tileSize,r_tileSize));
     for (int i = 0; i < 50; i++) {
-       m_chipset->insert(TileOps::translate(4) + i, a_tile);
+       m_chipset->do_assign(TileOps::translate(4) + i, a_tile);
     }
     a.drawPixmap(0,0,tilesize,tilesize,o_chipset.copy(5*r_tileSize,4*r_tileSize,r_tileSize,r_tileSize));
     for (int i = 0; i < 50; i++) {
-       m_chipset->insert(TileOps::translate(5) + i, a_tile);
+       m_chipset->do_assign(TileOps::translate(5) + i, a_tile);
     }
 
     /* BindGroundTiles */
@@ -500,7 +500,7 @@ void RpgPainter::loadChipset(QString chipset_name) {
             /*
              * Register tile
              */
-            m_chipset->insert(id, p_tile);
+            m_chipset->do_assign(id, p_tile);
         }
 
         terrain_id++;
@@ -531,7 +531,7 @@ void RpgPainter::loadChipset(QString chipset_name) {
             int orig_y = tile_row*r_tileSize;
             ef.drawPixmap(0,0,tilesize,tilesize,o_chipset.copy(orig_x,orig_y,r_tileSize,r_tileSize));
             ef.end();
-            m_chipset->insert(TileOps::translate(terrain_id), ef_tile);
+            m_chipset->do_assign(TileOps::translate(terrain_id), ef_tile);
             terrain_id++;
         }
 

@@ -36,7 +36,7 @@ signals:
 
 public slots:
 	void onLayerChange();
-    void onChipsetChange(std::shared_ptr<emilib::HashMap<short, QPixmap> >);
+    void onChipsetChange(std::shared_ptr<emhash8::HashMap<short, QPixmap> >);
 protected:
 
 	void updateSelectionRect();

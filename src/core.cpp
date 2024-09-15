@@ -25,7 +25,7 @@
 #include "common/dbstring.h"
 #include "common/image_loader.h"
 #include "defines.h"
-#include <vendor/hash_map.hpp>
+#include <vendor/hash_table8.hpp>
 
 //define static member
 Core *Core::core_instance = nullptr;
@@ -247,6 +247,6 @@ QPixmap Core::createDummyPixmap(int width, int height)
 	return dummy;
 }
 
-emilib::HashMap<QString, QPixmap> &Core::getEventCache() {
+emhash8::HashMap<QString, QPixmap> &Core::getEventCache() {
     return m_eventCache;
 }

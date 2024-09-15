@@ -20,7 +20,7 @@
 #include <QPainter>
 #include <core.h>
 
-#include <vendor/hash_map.hpp>
+#include <vendor/hash_table8.hpp>
 
 class RpgPainter : public QPainter {
 
@@ -45,12 +45,12 @@ public:
 
     inline bool chipsetIsNull() {return m_chipset->contains(0);}
 
-    inline std::shared_ptr<emilib::HashMap<short, QPixmap>> &sharePainterTiles() { return m_chipset; };
-    void forceChipset(std::shared_ptr<emilib::HashMap<short, QPixmap>> chipset);
+    inline std::shared_ptr<emhash8::HashMap<short, QPixmap>> &sharePainterTiles() { return m_chipset; };
+    void forceChipset(std::shared_ptr<emhash8::HashMap<short, QPixmap>> chipset);
 
 private:
-    std::shared_ptr<emilib::HashMap<short, QPixmap>> m_chipset = std::make_shared<emilib::HashMap<short, QPixmap>>(emilib::HashMap<short, QPixmap>());
-    emilib::HashMap<QString, QPixmap> *m_eventCache = nullptr;
+    std::shared_ptr<emhash8::HashMap<short, QPixmap>> m_chipset = std::make_shared<emhash8::HashMap<short, QPixmap>>(emhash8::HashMap<short, QPixmap>());
+    emhash8::HashMap<QString, QPixmap> *m_eventCache = nullptr;
     void loadChipset(QString chipset_name);
 
 };

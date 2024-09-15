@@ -62,7 +62,7 @@ public:
     void setCurrentMapEvents(QMap<int, lcf::rpg::Event *> *events);
     void setTileset(int index);
     QSize setPanorama(QString name);
-    inline std::shared_ptr<emilib::HashMap<short, QPixmap>> &sharePainterTiles() { return m_painter.sharePainterTiles(); };
+    inline std::shared_ptr<emhash8::HashMap<short, QPixmap>> &sharePainterTiles() { return m_painter.sharePainterTiles(); };
 signals:
 
 	void mapChanged();
